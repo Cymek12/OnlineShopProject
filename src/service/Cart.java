@@ -11,7 +11,7 @@ public class Cart {
 
     public void addProductToCart(Product product){
         if(product == null){
-            throw new NullPointerException("Product cannot be null");
+            throw new NullPointerException("Product cannot be null ");
         }
         if(product.getAvailableQuantity() == 0){
             throw new NotAvailableInStorageException("Product is not available at the moment");
