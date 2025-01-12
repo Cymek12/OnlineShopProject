@@ -1,5 +1,6 @@
 package service;
 
+import exception.EmptyCartException;
 import exception.NotAvailableInStorageException;
 import model.Product;
 
@@ -45,6 +46,15 @@ public class Cart {
         return false;
     }
 
+    public List<Product> getAddedProducts(){
+        if(addedProducts.isEmpty()){
+            throw new EmptyCartException("Cart is empty");
+        }
+        return addedProducts;
+    }
 
+    public double getOrderPrice() {
+        return addedProducts.stream().mapToDouble(Product::getPrice).sum();
+    }
 
 }
