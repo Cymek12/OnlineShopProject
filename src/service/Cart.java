@@ -34,11 +34,15 @@ public class Cart {
     }
 
 
-    public boolean deleteOrder(Product product){
+    public boolean deleteProductFromCart(Product product){
         if(product == null){
             throw new NullPointerException("Product cannot be null");
         }
-        return addedProducts.remove(product);
+        if(addedProducts.remove(product)){
+            product.setAvailableQuantity(product.getAvailableQuantity() + 1);
+            return true;
+        }
+        return false;
     }
 
 
