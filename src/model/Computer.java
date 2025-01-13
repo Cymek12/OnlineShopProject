@@ -8,8 +8,12 @@ public class Computer extends Product{
     private String graphicsCard;
     private int storageSize;
 
-    public Computer(int id, String name, double price, int availableQuantity) {
+    public Computer(int id, String name, double price, int availableQuantity, String processor, int ramSize, String graphicsCard, int storageSize) {
         super(id, name, price, availableQuantity);
+        this.processor = processor;
+        this.ramSize = ramSize;
+        this.graphicsCard = graphicsCard;
+        this.storageSize = storageSize;
     }
 
     public String getProcessor() {
