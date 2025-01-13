@@ -1,8 +1,6 @@
 package model;
 
 
-import service.Cart;
-
 import java.util.Objects;
 
 public class Order {
@@ -11,15 +9,15 @@ public class Order {
     private int phoneNumber;
     private String emailAddress;
     private String deliveryAddress;
-    private Cart cart;
+    private double orderPrice;
 
-    public Order(String firstName, String lastName, int phoneNumber, String emailAddress, String deliveryAddress, Cart cart) {
+    public Order(String firstName, String lastName, int phoneNumber, String emailAddress, String deliveryAddress, double orderPrice) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;
         this.deliveryAddress = deliveryAddress;
-        this.cart = cart;
+        this.orderPrice = orderPrice;
     }
 
     public String getFirstName() {
@@ -62,23 +60,23 @@ public class Order {
         this.deliveryAddress = deliveryAddress;
     }
 
-    public Cart getCart() {
-        return cart;
+    public double getOrderPrice() {
+        return orderPrice;
     }
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
+    public void setOrderPrice(double orderPrice) {
+        this.orderPrice = orderPrice;
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Order order)) return false;
-        return phoneNumber == order.phoneNumber && Objects.equals(firstName, order.firstName) && Objects.equals(lastName, order.lastName) && Objects.equals(emailAddress, order.emailAddress) && Objects.equals(deliveryAddress, order.deliveryAddress) && Objects.equals(cart, order.cart);
+        return phoneNumber == order.phoneNumber && Double.compare(orderPrice, order.orderPrice) == 0 && Objects.equals(firstName, order.firstName) && Objects.equals(lastName, order.lastName) && Objects.equals(emailAddress, order.emailAddress) && Objects.equals(deliveryAddress, order.deliveryAddress);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, phoneNumber, emailAddress, deliveryAddress, cart);
+        return Objects.hash(firstName, lastName, phoneNumber, emailAddress, deliveryAddress, orderPrice);
     }
 
     @Override
@@ -89,7 +87,7 @@ public class Order {
                 ", phoneNumber=" + phoneNumber +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", deliveryAddress='" + deliveryAddress + '\'' +
-                ", cart=" + cart +
+                ", orderPrice=" + orderPrice +
                 '}';
     }
 }
