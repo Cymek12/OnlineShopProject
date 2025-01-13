@@ -62,12 +62,6 @@ public class Computer extends Product{
 
     @Override
     public String toString() {
-        return super.toString() +
-                "Computer{" +
-                "processor='" + processor + '\'' +
-                ", ramSize=" + ramSize +
-                ", graphicsCard='" + graphicsCard + '\'' +
-                ", storageSize=" + storageSize +
-                '}';
+        return super.toString() + ", procesor: " + processor + ", ilość RAM: " + ramSize + ", karta graficzna: " + graphicsCard + ", wielkość dysku: " + storageSize;
     }
 }
