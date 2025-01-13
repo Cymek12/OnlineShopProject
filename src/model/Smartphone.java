@@ -7,8 +7,11 @@ public class Smartphone extends Product{
     private int batteryCapacity;
     private String accessories;
 
-    public Smartphone(int id, String name, double price, int availableQuantity) {
+    public Smartphone(int id, String name, double price, int availableQuantity, String color, int batteryCapacity, String accessories) {
         super(id, name, price, availableQuantity);
+        this.color = color;
+        this.batteryCapacity = batteryCapacity;
+        this.accessories = accessories;
     }
 
     public String getColor() {
