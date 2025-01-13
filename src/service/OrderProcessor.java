@@ -17,11 +17,11 @@ public class OrderProcessor {
             writer.write(sellerInformation());
             writer.write(buyerInformation(order));
             writer.write(orderedProductsInformation(cart));
-            writer.write("Do zapłaty: %s".formatted(order.getOrderPrice()));
+            writer.write("Do zapłaty: %s".formatted(Math.round(order.getOrderPrice() * 100.00) / 100.00));
 
-
+            System.out.println("Faktura została wygenerowana");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("!Błąd ppodczas generowania faktury generowaniu faktury!");
         }
     }
 
@@ -41,13 +41,14 @@ public class OrderProcessor {
     }
 
     private String orderedProductsInformation(Cart cart){
-        String result = "Lp. |" + " Nazwa towaru |" + " Cena Brutto";
+        String result = "Lp. |" + " Nazwa towaru |" + " Cena Brutto\n";
         int ordinalNumber = 0;
         for (Product product : cart.getAddedProducts()) {
-            result += ++ordinalNumber + " " + product.getName() + " " + product.getPrice();
+            result += ++ordinalNumber + " " + product.getName() + " " + product.getPrice() + "\n";
 //                result += ++ordinalNumber + " " + product.getName() + " " + ((Computer) product).getProcessor() + " " +
         }
         return result;
+
     }
 
 }

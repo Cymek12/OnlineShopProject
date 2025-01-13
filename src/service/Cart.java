@@ -1,11 +1,11 @@
 package service;
 
-import exception.EmptyCartException;
 import exception.NotAvailableInStorageException;
 import model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Cart {
     private List<Product> addedProducts = new ArrayList<>();
@@ -43,15 +43,30 @@ public class Cart {
         return false;
     }
 
-    public List<Product> getAddedProducts() throws EmptyCartException {
+    public List<Product> getAddedProducts() {
         if(addedProducts.isEmpty()){
-            throw new EmptyCartException("Cart is empty");
+            //throw new EmptyCartException("Cart is empty");
         }
         return addedProducts;
     }
 
     public double getOrderPrice() {
         return addedProducts.stream().mapToDouble(Product::getPrice).sum();
+    }
+
+    public void clearAddedProducts(){
+        addedProducts.clear();
+    }
+
+    public void deleteProductFromList(int id){
+        Optional<Product> optAddedProduct = addedProducts.stream().filter(product -> product.getId() == id).findFirst();
+        if(optAddedProduct.isPresent()){
+            addedProducts.remove(optAddedProduct.get());
+            System.out.println("Usunięto produkt z koszyka");
+        }
+        else {
+            System.out.println("Produkt o podanym Id nie znajduje się w koszyku");
+        }
     }
 
 }
