@@ -10,10 +10,7 @@ import java.util.List;
 public class Cart {
     private List<Product> addedProducts = new ArrayList<>();
 
-    public void addProductToCart(Product product){
-        if(product == null){
-            throw new NullPointerException("Product cannot be null ");
-        }
+    public void addProductToCart(Product product) throws NotAvailableInStorageException {
         if(product.getAvailableQuantity() == 0){
             throw new NotAvailableInStorageException("Product is not available at the moment");
         }
@@ -46,7 +43,7 @@ public class Cart {
         return false;
     }
 
-    public List<Product> getAddedProducts(){
+    public List<Product> getAddedProducts() throws EmptyCartException {
         if(addedProducts.isEmpty()){
             throw new EmptyCartException("Cart is empty");
         }

@@ -1,6 +1,6 @@
 package exception;
 
-public class NotAvailableInStorageException extends RuntimeException{
+public class NotAvailableInStorageException extends Exception {
     public NotAvailableInStorageException(String message) {
         super(message);
     }
