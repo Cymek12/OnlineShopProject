@@ -68,6 +68,10 @@ public class Order {
         this.orderPrice = orderPrice;
     }
 
+    public double getRoundedOrderPrice() {
+        return Math.round(orderPrice * 100.0) / 100.0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Order order)) return false;

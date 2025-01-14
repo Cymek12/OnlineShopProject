@@ -14,7 +14,6 @@ public class CommandLine {
     OrderProcessor orderProcessor = new OrderProcessor();
 
 
-
     public void run(){
         productManager.exampleData();
         System.out.println(" ---> Sklep Internetowy <---");
@@ -22,8 +21,7 @@ public class CommandLine {
     }
 
     private void mainMenu(){
-        boolean isRunning = true;
-        while (isRunning){
+        while (true){
             System.out.println("1. Wyświetl listę produktów");
             System.out.println("2. Dodaj produkt do koszyka");
             System.out.println("3. Skonfiguruj produkt w koszyku");
@@ -35,9 +33,9 @@ public class CommandLine {
             switch (option) {
                 case 1 -> productListMenu();
                 case 2 -> addProductToCartMenu();
-                case 3 -> configureProductInCartMenu();
+                case 3 -> configureAddedProduct();
                 case 4 -> cartMenu();
-                case 5 -> isRunning = false;
+                case 5 -> exit();
                 default -> System.out.println("Wybrano niepoprawną opcję");
             }
         }
@@ -65,10 +63,6 @@ public class CommandLine {
         else {
             System.out.println("Produkt o podanym Id nie istnieje");
         }
-    }
-
-    private void configureProductInCartMenu(){
-
     }
 
     private void cartMenu() {
@@ -115,7 +109,23 @@ public class CommandLine {
         System.out.println("Koszyk:");
         cart.printAddedProducts();
         System.out.println("\nPodaj id produktu który chcesz usunąć:");
-        cart.deleteProductFromList(scanner.nextInt());
+        int id = scanner.nextInt();
         scanner.nextLine();
+        cart.deleteProductFromList(id);
+
+    }
+
+    private void configureAddedProduct(){
+        System.out.println("Koszyk:");
+        cart.printAddedProducts();
+        System.out.println("\nPodaj id produktu którego parametry chcesz edytować:");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        cart.configureProduct(id);
+    }
+
+    private void exit(){
+        System.out.println("Zamykam aplikacje");
+        scanner.close();
     }
 }
