@@ -10,10 +10,10 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class CommandLine {
-    Scanner scanner = new Scanner(System.in);
-    ProductManager productManager = new ProductManager();
-    Cart cart = new Cart();
-    OrderProcessor orderProcessor = new OrderProcessor();
+    private Scanner scanner = new Scanner(System.in);
+    private ProductManager productManager = new ProductManager();
+    private Cart cart = new Cart();
+    private OrderProcessor orderProcessor = new OrderProcessor();
 
 
     public void run(){

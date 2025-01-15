@@ -13,7 +13,6 @@ public class ProductManager {
     private List<Product> products;
 
 
-
     public ProductManager() {
         this.products = new ArrayList<>();
     }

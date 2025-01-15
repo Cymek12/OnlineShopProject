@@ -58,7 +58,6 @@ public class OrderProcessor {
         try {
             for (Product product : cart.getAddedProducts()) {
                 result += ++ordinalNumber + " " + product.getName() + " " + product.getPrice() + "\n";
-    //                result += ++ordinalNumber + " " + product.getName() + " " + ((Computer) product).getProcessor() + " " +
             }
         } catch (EmptyCartException e) {
             System.out.println("Koszyk jest pusty!");
