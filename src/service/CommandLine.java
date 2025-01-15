@@ -1,5 +1,6 @@
 package service;
 
+import exception.EmptyCartException;
 import exception.NotAvailableInStorageException;
 import model.Computer;
 import model.Order;
@@ -23,7 +24,8 @@ public class CommandLine {
     }
 
     private void mainMenu(){
-        while (true){
+        boolean isRunning = true;
+        while (isRunning){
             System.out.println("1. Wyświetl listę produktów");
             System.out.println("2. Dodaj produkt do koszyka");
             System.out.println("3. Skonfiguruj produkt w koszyku");
@@ -35,9 +37,25 @@ public class CommandLine {
             switch (option) {
                 case 1 -> productListMenu();
                 case 2 -> addProductToCartMenu();
-                case 3 -> configureProduct();
-                case 4 -> cartMenu();
-                case 5 -> exit();
+                case 3 -> {
+                    try {
+                        configureProduct();
+                    } catch (EmptyCartException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+                case 4 -> {
+                    try {
+                        cartMenu();
+                    } catch (EmptyCartException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+                case 5 -> {
+                    System.out.println("Zamykam aplikacje");
+                    scanner.close();
+                    isRunning = false;
+                }
                 default -> System.out.println("Wybrano niepoprawną opcję");
             }
         }
@@ -67,7 +85,7 @@ public class CommandLine {
         }
     }
 
-    private void cartMenu() {
+    private void cartMenu() throws EmptyCartException {
         while (true){
             System.out.println("Koszyk:");
             cart.printAddedProducts();
@@ -81,8 +99,17 @@ public class CommandLine {
             scanner.nextLine();
             switch (option) {
                 case 1 -> finalizeOrder();
-                case 2 -> cart.clearAddedProducts();
-                case 3 -> deleteProductFromCart();
+                case 2 -> {
+                    cart.clearAddedProducts();
+                    System.out.println("Usunięto produkty z koszyka");
+                    mainMenu();
+                }
+                case 3 -> {
+                    deleteProductFromCart();
+                    if(cart.isCartEmpty()){
+                        mainMenu();
+                    }
+                }
                 case 4 -> mainMenu();
                 default -> System.out.println("Wybrano niepoprawną opcję");
             }
@@ -107,7 +134,7 @@ public class CommandLine {
         mainMenu();
     }
 
-    private void deleteProductFromCart(){
+    private void deleteProductFromCart() throws EmptyCartException {
         System.out.println("Koszyk:");
         cart.printAddedProducts();
         System.out.println("\nPodaj id produktu który chcesz usunąć:");
@@ -117,7 +144,7 @@ public class CommandLine {
 
     }
 
-    private void configureProduct(){
+    private void configureProduct() throws EmptyCartException {
         System.out.println("Koszyk:");
         cart.printAddedProducts();
         System.out.println("\nPodaj id produktu którego parametry chcesz edytować:");
@@ -167,12 +194,5 @@ public class CommandLine {
         String accessories = scanner.nextLine();
 
         cart.configureSmartphone(smartphone, color, batteryCapacity, accessories);
-    }
-
-
-
-    private void exit(){
-        System.out.println("Zamykam aplikacje");
-        scanner.close();
     }
 }

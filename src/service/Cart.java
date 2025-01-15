@@ -15,7 +15,7 @@ public class Cart {
 
     public void addProductToCart(Product product) throws NotAvailableInStorageException {
         if(product.getAvailableQuantity() == 0){
-            throw new NotAvailableInStorageException("Product is not available at the moment");
+            throw new NotAvailableInStorageException("Brak produktu w magazynie");
         }
 
         addedProducts.add(product);
@@ -24,22 +24,19 @@ public class Cart {
 
     }
 
-    public void printAddedProducts(){
-        if(addedProducts.isEmpty()){
-            System.out.println("Koszyk jest pusty");
-            return;
-        }
-        for (Product addedProduct : addedProducts) {
-            System.out.println(addedProduct);
-        }
-    }
-
-
     public List<Product> getAddedProducts() throws EmptyCartException {
         if(addedProducts.isEmpty()){
-            throw new EmptyCartException("Cart is empty");
+            throw new EmptyCartException("Niepowodzenie operacji - Koszyk jest pusty!");
         }
         return addedProducts;
+    }
+
+    public boolean isCartEmpty(){
+        return addedProducts.isEmpty();
+    }
+
+    public void printAddedProducts() throws EmptyCartException {
+        getAddedProducts().forEach(System.out::println);
     }
 
     public double getOrderPrice() {
@@ -65,7 +62,6 @@ public class Cart {
             System.out.println("Produkt o podanym Id nie znajduje się w koszyku");
         }
     }
-
 
     public void configureComputer(Computer computer, String processor, int ramSize, String graphicsCard, int storageSize){
         if(processor == null && graphicsCard == null){
