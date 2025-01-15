@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class OrderProcessor {
+    DataPersistence dataPersistence = new DataPersistence();
     private static int factureNumber = 0;
 
     public void generateFacture(Order order, Cart cart){
@@ -24,9 +25,12 @@ public class OrderProcessor {
             writer.write("\nZamówienie zostanie wysłane w ciągu 7 dni roboczych od zaksięgowania wpłaty");
 
             System.out.println("Faktura została wygenerowana");
+            dataPersistence.writeOrderToFile(OrderProcessor.this, cart);
+            dataPersistence.writeUserToFile(OrderProcessor.this, order);
         } catch (IOException e) {
-            System.out.println("!Błąd ppodczas generowania faktury generowaniu faktury!");
+            System.out.println("!Błąd podczas generowania faktury!");
         }
+        cart.clearAddedProducts();
     }
 
     private String getSellerInformation(){
@@ -36,7 +40,7 @@ public class OrderProcessor {
                 "NIP: 111-222-33-44\n";
     }
 
-    private String getBuyerInformation(Order order){
+    public String getBuyerInformation(Order order){
         return "\nNabywca:\n" +
                 order.getFirstName() + " " + order.getLastName() + "\n" +
                 order.getDeliveryAddress() + "\n" +
@@ -52,7 +56,7 @@ public class OrderProcessor {
                 "Proszę opłacić zamówienie do " + now.plusDays(20).format(dateFormatter);
     }
 
-    private String getOrderedProductsInformation(Cart cart){
+    public String getOrderedProductsInformation(Cart cart){
         String result = "\nLp. |" + " Nazwa towaru |" + " Cena Brutto\n";
         int ordinalNumber = 0;
         try {
@@ -60,7 +64,7 @@ public class OrderProcessor {
                 result += ++ordinalNumber + " " + product.getName() + " " + product.getPrice() + "\n";
             }
         } catch (EmptyCartException e) {
-            System.out.println("Koszyk jest pusty!");
+            e.getMessage();
         }
         return result;
 
