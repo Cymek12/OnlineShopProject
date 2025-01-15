@@ -9,7 +9,7 @@ import java.io.IOException;
 public class DataPersistence {
     private static int orderNumber = 0;
 
-    public void writeOrderToFile(OrderProcessor orderProcessor, Cart cart) {
+    public synchronized void writeOrderToFile(OrderProcessor orderProcessor, Cart cart) {
         orderNumber++;
         try (FileWriter writer = new FileWriter("zamowienie_" + orderNumber + ".txt")) {
             writer.write("Zamówienie numer: " + orderNumber + "\n");
@@ -19,7 +19,7 @@ public class DataPersistence {
         }
     }
 
-    public void writeUserToFile(OrderProcessor orderProcessor, Order order) {
+    public synchronized void writeUserToFile(OrderProcessor orderProcessor, Order order) {
         try (FileWriter writer = new FileWriter("uzytkownik_" + orderNumber + ".txt")) {
             writer.write("Użytkownik numer: " + orderNumber + "\n");
             writer.write(orderProcessor.getBuyerInformation(order));

@@ -7,6 +7,7 @@ import model.Order;
 import model.Product;
 import model.Smartphone;
 
+import javax.xml.crypto.Data;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -15,6 +16,7 @@ public class CommandLine {
     private ProductManager productManager = new ProductManager();
     private Cart cart = new Cart();
     private OrderProcessor orderProcessor = new OrderProcessor();
+//    private DataPersistence dataPersistence = new DataPersistence();
 
 
     public void run(){
@@ -53,6 +55,7 @@ public class CommandLine {
                 }
                 case 5 -> {
                     System.out.println("Zamykam aplikacje");
+                    orderProcessor.shutdownThreads();
                     scanner.close();
                     isRunning = false;
                 }
@@ -84,6 +87,60 @@ public class CommandLine {
             System.out.println("Produkt o podanym Id nie istnieje");
         }
     }
+
+    private void configureProduct() throws EmptyCartException {
+        System.out.println("Koszyk:");
+        cart.printAddedProducts();
+        System.out.println("\nPodaj id produktu którego parametry chcesz edytować:");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        Optional<Product> optAddedProduct = cart.findAddedProductById(id);
+        if(optAddedProduct.isPresent()){
+            if(optAddedProduct.get() instanceof Computer computer){
+                configureComputer(computer);
+            }
+            else if(optAddedProduct.get() instanceof Smartphone smartphone){
+                configureSmartphone(smartphone);
+            }
+            else {
+                System.out.println("Produkt o podanym Id nie podlega konfiguracji");
+            }
+        }
+        else {
+            System.out.println("Produkt o podanym Id nie znajduje się w koszyku");
+        }
+    }
+
+
+    private void configureComputer(Computer computer){
+        System.out.println("Konfiguracja komputera:");
+        System.out.println("Wybierz processor: (intel i3, intel i5, intel i7, intel i9, amd ryzen 5, amd ryzen 7) ");
+        String processor = scanner.nextLine();
+        System.out.println("Wybierz ilość RAM: (4, 8, 16, 32, 64, 128) ");
+        int ramSize = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Wybierz kartę graficzną: (RTX 780, RTX 4060, RTX 6000, RTX 3070");
+        String graphicsCard = scanner.nextLine();
+        System.out.println("Wybierz pojemność dysku twardego: (128, 256, 512, 1000, 2000, 5000");
+        int storageSize = scanner.nextInt();
+        scanner.nextLine();
+
+        cart.configureComputer(computer, processor, ramSize, graphicsCard, storageSize);
+    }
+
+    private void configureSmartphone(Smartphone smartphone){
+        System.out.println("Konfiguracja telefonu:");
+        System.out.println("Wybierz kolor: (Czarny, Biały, Czerwony, Niebieski, Zielony) ");
+        String color = scanner.nextLine();
+        System.out.println("Wybierz pojemność baterii (2800, 3500, 4000, 4800)");
+        int batteryCapacity = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Wybierz akcesoria do telefonu (Szybka ładowarka, Etui, Szkło, Słuchawki) ");
+        String accessories = scanner.nextLine();
+
+        cart.configureSmartphone(smartphone, color, batteryCapacity, accessories);
+    }
+
 
     private void cartMenu() throws EmptyCartException {
         while (true){
@@ -130,7 +187,10 @@ public class CommandLine {
         System.out.print("Adres do wysyłki: ");
         String deliveryAddress = scanner.nextLine();
 
-        orderProcessor.generateFacture(new Order(firstName, lastName, phoneNumber, emailAddress, deliveryAddress, cart.getOrderPrice()), cart);
+        Order order = new Order(firstName, lastName, phoneNumber, emailAddress, deliveryAddress, cart.getOrderPrice());
+        orderProcessor.processOrder(order, cart);
+//        dataPersistence.writeUserToFile(orderProcessor, order);
+//        dataPersistence.writeOrderToFile(orderProcessor, cart);
         mainMenu();
     }
 
@@ -144,55 +204,6 @@ public class CommandLine {
 
     }
 
-    private void configureProduct() throws EmptyCartException {
-        System.out.println("Koszyk:");
-        cart.printAddedProducts();
-        System.out.println("\nPodaj id produktu którego parametry chcesz edytować:");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<Product> optAddedProduct = cart.findAddedProductById(id);
-        if(optAddedProduct.isPresent()){
-            if(optAddedProduct.get() instanceof Computer computer){
-                configureComputer(computer);
-            }
-            else if(optAddedProduct.get() instanceof Smartphone smartphone){
-                configureSmartphone(smartphone);
-            }
-            else {
-                System.out.println("Produkt o podanym Id nie podlega konfiguracji");
-            }
-        }
-        else {
-            System.out.println("Produkt o podanym Id nie znajduje się w koszyku");
-        }
-    }
 
-    private void configureComputer(Computer computer){
-        System.out.println("Konfiguracja komputera:");
-        System.out.println("Wybierz processor: (intel i3, intel i5, intel i7, intel i9, amd ryzen 5, amd ryzen 7) ");
-        String processor = scanner.nextLine();
-        System.out.println("Wybierz ilość RAM: (4, 8, 16, 32, 64, 128) ");
-        int ramSize = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Wybierz kartę graficzną: (RTX 780, RTX 4060, RTX 6000, RTX 3070");
-        String graphicsCard = scanner.nextLine();
-        System.out.println("Wybierz pojemność dysku twardego: (128, 256, 512, 1000, 2000, 5000");
-        int storageSize = scanner.nextInt();
-        scanner.nextLine();
 
-        cart.configureComputer(computer, processor, ramSize, graphicsCard, storageSize);
-    }
-
-    private void configureSmartphone(Smartphone smartphone){
-        System.out.println("Konfiguracja telefonu:");
-        System.out.println("Wybierz kolor: (Czarny, Biały, Czerwony, Niebieski, Zielony) ");
-        String color = scanner.nextLine();
-        System.out.println("Wybierz pojemność baterii (2800, 3500, 4000, 4800)");
-        int batteryCapacity = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Wybierz akcesoria do telefonu (Szybka ładowarka, Etui, Szkło, Słuchawki) ");
-        String accessories = scanner.nextLine();
-
-        cart.configureSmartphone(smartphone, color, batteryCapacity, accessories);
-    }
 }

@@ -8,12 +8,29 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class OrderProcessor {
-    DataPersistence dataPersistence = new DataPersistence();
+    private ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private DataPersistence dataPersistence = new DataPersistence();
+
     private static int factureNumber = 0;
 
-    public void generateFacture(Order order, Cart cart){
+    public void processOrder(Order order, Cart cart){
+        executorService.submit(() -> {
+            generateFacture(order, cart);
+            dataPersistence.writeOrderToFile(this, cart);
+            dataPersistence.writeUserToFile(this, order);
+        });
+
+    }
+
+    public void shutdownThreads(){
+        executorService.shutdown();
+    }
+
+    public synchronized void generateFacture(Order order, Cart cart){
         factureNumber++;
         try (FileWriter writer = new FileWriter("faktura_" + factureNumber + ".txt")){
             writer.write("Faktura numer: " + factureNumber + "\n");
@@ -25,8 +42,8 @@ public class OrderProcessor {
             writer.write("\nZamówienie zostanie wysłane w ciągu 7 dni roboczych od zaksięgowania wpłaty");
 
             System.out.println("Faktura została wygenerowana");
-            dataPersistence.writeOrderToFile(OrderProcessor.this, cart);
-            dataPersistence.writeUserToFile(OrderProcessor.this, order);
+//            dataPersistence.writeOrderToFile(OrderProcessor.this, cart);
+//            dataPersistence.writeUserToFile(OrderProcessor.this, order);
         } catch (IOException e) {
             System.out.println("!Błąd podczas generowania faktury!");
         }
