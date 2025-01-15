@@ -6,6 +6,8 @@ import model.Product;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class OrderProcessor {
     private static int factureNumber = 0;
@@ -17,7 +19,9 @@ public class OrderProcessor {
             writer.write(getSellerInformation());
             writer.write(getBuyerInformation(order));
             writer.write(getOrderedProductsInformation(cart));
-            writer.write("Do zapłaty: %s".formatted(order.getRoundedOrderPrice()));
+            writer.write("\nDo zapłaty: %s".formatted(order.getRoundedOrderPrice()));
+            writer.write(getDateTimeInformation());
+            writer.write("\nZamówienie zostanie wysłane w ciągu 7 dni roboczych od zaksięgowania wpłaty");
 
             System.out.println("Faktura została wygenerowana");
         } catch (IOException e) {
@@ -40,8 +44,16 @@ public class OrderProcessor {
                 order.getEmailAddress() + "\n";
     }
 
+    private String getDateTimeInformation(){
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDateTime now = LocalDateTime.now();
+        return "\n\nData i godzina wystawienia faktury: " + now.format(dateTimeFormatter) + "\n" +
+                "Proszę opłacić zamówienie do " + now.plusDays(20).format(dateFormatter);
+    }
+
     private String getOrderedProductsInformation(Cart cart){
-        String result = "Lp. |" + " Nazwa towaru |" + " Cena Brutto\n";
+        String result = "\nLp. |" + " Nazwa towaru |" + " Cena Brutto\n";
         int ordinalNumber = 0;
         try {
             for (Product product : cart.getAddedProducts()) {
