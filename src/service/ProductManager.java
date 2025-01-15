@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ProductManager {
-    List<Product> products;
+    private List<Product> products;
 
 
 

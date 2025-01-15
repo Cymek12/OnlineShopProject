@@ -1,5 +1,6 @@
 package service;
 
+import exception.EmptyCartException;
 import model.Order;
 import model.Product;
 
@@ -42,9 +43,13 @@ public class OrderProcessor {
     private String getOrderedProductsInformation(Cart cart){
         String result = "Lp. |" + " Nazwa towaru |" + " Cena Brutto\n";
         int ordinalNumber = 0;
-        for (Product product : cart.getAddedProducts()) {
-            result += ++ordinalNumber + " " + product.getName() + " " + product.getPrice() + "\n";
-//                result += ++ordinalNumber + " " + product.getName() + " " + ((Computer) product).getProcessor() + " " +
+        try {
+            for (Product product : cart.getAddedProducts()) {
+                result += ++ordinalNumber + " " + product.getName() + " " + product.getPrice() + "\n";
+    //                result += ++ordinalNumber + " " + product.getName() + " " + ((Computer) product).getProcessor() + " " +
+            }
+        } catch (EmptyCartException e) {
+            System.out.println("Koszyk jest pusty!");
         }
         return result;
 

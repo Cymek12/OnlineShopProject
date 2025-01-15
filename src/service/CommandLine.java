@@ -1,8 +1,10 @@
 package service;
 
 import exception.NotAvailableInStorageException;
+import model.Computer;
 import model.Order;
 import model.Product;
+import model.Smartphone;
 
 import java.util.Optional;
 import java.util.Scanner;
@@ -33,7 +35,7 @@ public class CommandLine {
             switch (option) {
                 case 1 -> productListMenu();
                 case 2 -> addProductToCartMenu();
-                case 3 -> configureAddedProduct();
+                case 3 -> configureProduct();
                 case 4 -> cartMenu();
                 case 5 -> exit();
                 default -> System.out.println("Wybrano niepoprawną opcję");
@@ -80,7 +82,7 @@ public class CommandLine {
             switch (option) {
                 case 1 -> finalizeOrder();
                 case 2 -> cart.clearAddedProducts();
-                case 3 -> deleteProductFromList();
+                case 3 -> deleteProductFromCart();
                 case 4 -> mainMenu();
                 default -> System.out.println("Wybrano niepoprawną opcję");
             }
@@ -105,24 +107,69 @@ public class CommandLine {
         mainMenu();
     }
 
-    private void deleteProductFromList(){
+    private void deleteProductFromCart(){
         System.out.println("Koszyk:");
         cart.printAddedProducts();
         System.out.println("\nPodaj id produktu który chcesz usunąć:");
         int id = scanner.nextInt();
         scanner.nextLine();
-        cart.deleteProductFromList(id);
+        cart.deleteProductFromCart(id);
 
     }
 
-    private void configureAddedProduct(){
+    private void configureProduct(){
         System.out.println("Koszyk:");
         cart.printAddedProducts();
         System.out.println("\nPodaj id produktu którego parametry chcesz edytować:");
         int id = scanner.nextInt();
         scanner.nextLine();
-        cart.configureProduct(id);
+        Optional<Product> optAddedProduct = cart.findAddedProductById(id);
+        if(optAddedProduct.isPresent()){
+            if(optAddedProduct.get() instanceof Computer computer){
+                configureComputer(computer);
+            }
+            else if(optAddedProduct.get() instanceof Smartphone smartphone){
+                configureSmartphone(smartphone);
+            }
+            else {
+                System.out.println("Produkt o podanym Id nie podlega konfiguracji");
+            }
+        }
+        else {
+            System.out.println("Produkt o podanym Id nie znajduje się w koszyku");
+        }
     }
+
+    private void configureComputer(Computer computer){
+        System.out.println("Konfiguracja komputera:");
+        System.out.println("Wybierz processor: (intel i3, intel i5, intel i7, intel i9, amd ryzen 5, amd ryzen 7) ");
+        String processor = scanner.nextLine();
+        System.out.println("Wybierz ilość RAM: (4, 8, 16, 32, 64, 128) ");
+        int ramSize = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Wybierz kartę graficzną: (RTX 780, RTX 4060, RTX 6000, RTX 3070");
+        String graphicsCard = scanner.nextLine();
+        System.out.println("Wybierz pojemność dysku twardego: (128, 256, 512, 1000, 2000, 5000");
+        int storageSize = scanner.nextInt();
+        scanner.nextLine();
+
+        cart.configureComputer(computer, processor, ramSize, graphicsCard, storageSize);
+    }
+
+    private void configureSmartphone(Smartphone smartphone){
+        System.out.println("Konfiguracja telefonu:");
+        System.out.println("Wybierz kolor: (Czarny, Biały, Czerwony, Niebieski, Zielony) ");
+        String color = scanner.nextLine();
+        System.out.println("Wybierz pojemność baterii (2800, 3500, 4000, 4800)");
+        int batteryCapacity = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Wybierz akcesoria do telefonu (Szybka ładowarka, Etui, Szkło, Słuchawki) ");
+        String accessories = scanner.nextLine();
+
+        cart.configureSmartphone(smartphone, color, batteryCapacity, accessories);
+    }
+
+
 
     private void exit(){
         System.out.println("Zamykam aplikacje");
