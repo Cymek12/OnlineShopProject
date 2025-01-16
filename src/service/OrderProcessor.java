@@ -8,37 +8,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class OrderProcessor {
-    private ExecutorService executorService = Executors.newFixedThreadPool(3);
-    private DataPersistence dataPersistence = new DataPersistence();
 
-    private static int factureNumber = 0;
-
-    /**
-     * metoda pozwala na wykorzystanie wielowatkowosci przy realizacji zamowien
-     */
-    public void processOrder(Order order, Cart cart){
-        executorService.submit(() -> {
-            generateFacture(order, cart);
-            dataPersistence.writeOrderToFile(this, cart);
-            dataPersistence.writeUserToFile(this, order);
-        });
-    }
-
-    public void shutdownThreads(){
-        executorService.shutdown();
-    }
+    private static int documentNumber = 0;
 
     /**
      * generuje fakture zawierajaca dane sprzedawcy, dane klienta, szczególy zamówienia, kwote do zaplaty, date wygenerowania faktury oraz termin zaplaty. Faktura jest zapisywana do pliku
      */
     public synchronized void generateFacture(Order order, Cart cart){
-        factureNumber++;
-        try (FileWriter writer = new FileWriter("faktura_" + factureNumber + ".txt")){
-            writer.write("Faktura numer: " + factureNumber + "\n");
+        documentNumber++;
+        try (FileWriter writer = new FileWriter("faktura_" + documentNumber + ".txt")){
+            writer.write("Faktura numer: " + documentNumber + "\n");
             writer.write(getSellerInformation());
             writer.write(getBuyerInformation(order));
             writer.write(getOrderedProductsInformation(cart));
@@ -47,10 +28,34 @@ public class OrderProcessor {
             writer.write("\nZamówienie zostanie wysłane w ciągu 7 dni roboczych od zaksięgowania wpłaty");
 
             System.out.println("Faktura została wygenerowana");
-//            dataPersistence.writeOrderToFile(OrderProcessor.this, cart);
-//            dataPersistence.writeUserToFile(OrderProcessor.this, order);
+
         } catch (IOException e) {
             System.out.println("!Błąd podczas generowania faktury!");
+        }
+    }
+
+    /**
+     * Metoda obsluguje zapis szczególów dotyczacych zamówienie do pliku tekstowego
+     */
+    public synchronized void writeOrderToFile(Cart cart) {
+        try (FileWriter writer = new FileWriter("zamowienie_" + documentNumber + ".txt")) {
+            writer.write("Zamówienie numer: " + documentNumber + "\n");
+            writer.write(getOrderedProductsInformation(cart));
+        } catch (IOException e) {
+            System.out.println("Błąd generowania pliku z zamówienem");
+        }
+    }
+
+    /**
+     * Metoda obsluguje zapis szczególów dotyczacych uzytkownika i adresu wysylki do pliku tekstowego
+     */
+    public synchronized void writeUserToFile(Order order) {
+        try (FileWriter writer = new FileWriter("uzytkownik_" + documentNumber + ".txt")) {
+            writer.write("Użytkownik numer: " + documentNumber + "\n");
+            writer.write(getBuyerInformation(order));
+
+        } catch (IOException e) {
+            System.out.println("Błąd generowania pliku z użytkownikiem");
         }
     }
 
@@ -74,7 +79,7 @@ public class OrderProcessor {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDateTime now = LocalDateTime.now();
         return "\n\nData i godzina wystawienia faktury: " + now.format(dateTimeFormatter) + "\n" +
-                "Proszę opłacić zamówienie do " + now.plusDays(20).format(dateFormatter);
+                "Proszę opłacić zamówienie do " + now.plusDays(7).format(dateFormatter);
     }
 
     public String getOrderedProductsInformation(Cart cart){

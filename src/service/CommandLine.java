@@ -7,7 +7,6 @@ import model.Order;
 import model.Product;
 import model.Smartphone;
 
-import javax.xml.crypto.Data;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -17,14 +16,15 @@ import java.util.Scanner;
  */
 public class CommandLine {
     private Scanner scanner = new Scanner(System.in);
-    private ProductManager productManager = new ProductManager();
+    private ProductManager productManager;
     private Cart cart = new Cart();
     private OrderProcessor orderProcessor = new OrderProcessor();
-//    private DataPersistence dataPersistence = new DataPersistence();
 
+    public CommandLine(ProductManager productManager) {
+        this.productManager = productManager;
+    }
 
     public void run(){
-        productManager.exampleData();
         System.out.println(" ---> Sklep Internetowy <---");
         mainMenu();
     }
@@ -59,9 +59,8 @@ public class CommandLine {
                 }
                 case 5 -> {
                     System.out.println("Zamykam aplikacje");
-                    orderProcessor.shutdownThreads();
-                    scanner.close();
                     isRunning = false;
+                    scanner.close();
                 }
                 default -> System.out.println("Wybrano niepoprawną opcję");
             }
@@ -198,10 +197,9 @@ public class CommandLine {
 
         Order order = new Order(firstName, lastName, phoneNumber, emailAddress, deliveryAddress, cart.getOrderPrice() * discount);
         Cart cartForGenerateFacture = cart;
-        orderProcessor.processOrder(order, cartForGenerateFacture);
-//        dataPersistence.writeUserToFile(orderProcessor, order);
-//        dataPersistence.writeOrderToFile(orderProcessor, cart);
-        mainMenu();
+        orderProcessor.generateFacture(order, cartForGenerateFacture);
+        orderProcessor.writeOrderToFile(cartForGenerateFacture);
+        orderProcessor.writeUserToFile(order);
         cart.clearAddedProducts();
 
     }

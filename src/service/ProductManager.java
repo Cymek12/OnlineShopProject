@@ -54,7 +54,7 @@ public class ProductManager {
         return products.stream().filter(product -> product.getId() == id).findFirst();
     }
 
-    public void exampleData(){
+    public void insertExampleData(){
         products.add(new Electronics(1, "Wireless Mouse", 25.99, 50));
         products.add(new Electronics(2, "Bluetooth Keyboard", 45.99, 30));
         products.add(new Electronics(3, "External Hard Drive", 89.99, 20));
