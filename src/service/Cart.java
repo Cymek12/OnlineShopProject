@@ -52,7 +52,7 @@ public class Cart {
     }
 
     public void deleteProductFromCart(int id){
-        Optional<Product> optAddedProduct = addedProducts.stream().filter(product -> product.getId() == id).findFirst();
+        Optional<Product> optAddedProduct = findAddedProductById(id);
         if(optAddedProduct.isPresent()){
             addedProducts.remove(optAddedProduct.get());
             optAddedProduct.get().setAvailableQuantity(optAddedProduct.get().getAvailableQuantity() + 1);
