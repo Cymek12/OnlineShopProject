@@ -143,7 +143,8 @@ public class CommandLine {
 
 
     private void cartMenu() throws EmptyCartException {
-        while (true){
+        boolean isRunning = true;
+        while (isRunning){
             System.out.println("Koszyk:");
             cart.printAddedProducts();
             System.out.println("\nDo zapłaty: " + (Math.round(cart.getOrderPrice() * 100.0) / 100.0) + "zł");
@@ -167,7 +168,7 @@ public class CommandLine {
                         mainMenu();
                     }
                 }
-                case 4 -> mainMenu();
+                case 4 -> isRunning = false;
                 default -> System.out.println("Wybrano niepoprawną opcję");
             }
         }
@@ -186,12 +187,19 @@ public class CommandLine {
         String emailAddress = scanner.nextLine();
         System.out.print("Adres do wysyłki: ");
         String deliveryAddress = scanner.nextLine();
+        System.out.println("Kod zniżkowy: (jeżeli nie posiadasz kodu zniżkowego, to zostaw pole puste)");
+        String discountCode = scanner.nextLine();
+        DiscountManager discountManager = new DiscountManager();
+        double discount = discountManager.applyDiscount(discountCode);
 
-        Order order = new Order(firstName, lastName, phoneNumber, emailAddress, deliveryAddress, cart.getOrderPrice());
-        orderProcessor.processOrder(order, cart);
+        Order order = new Order(firstName, lastName, phoneNumber, emailAddress, deliveryAddress, cart.getOrderPrice() * discount);
+        Cart cartForGenerateFacture = cart;
+        orderProcessor.processOrder(order, cartForGenerateFacture);
 //        dataPersistence.writeUserToFile(orderProcessor, order);
 //        dataPersistence.writeOrderToFile(orderProcessor, cart);
         mainMenu();
+        cart.clearAddedProducts();
+
     }
 
     private void deleteProductFromCart() throws EmptyCartException {
@@ -203,7 +211,4 @@ public class CommandLine {
         cart.deleteProductFromCart(id);
 
     }
-
-
-
 }

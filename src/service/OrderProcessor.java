@@ -23,7 +23,6 @@ public class OrderProcessor {
             dataPersistence.writeOrderToFile(this, cart);
             dataPersistence.writeUserToFile(this, order);
         });
-
     }
 
     public void shutdownThreads(){
@@ -47,7 +46,6 @@ public class OrderProcessor {
         } catch (IOException e) {
             System.out.println("!Błąd podczas generowania faktury!");
         }
-        cart.clearAddedProducts();
     }
 
     private String getSellerInformation(){
