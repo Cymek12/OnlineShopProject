@@ -11,6 +11,10 @@ import javax.xml.crypto.Data;
 import java.util.Optional;
 import java.util.Scanner;
 
+
+/**
+ * Klasa obsługuje wyświetlanie aplikacji w konsoli systemowej
+ */
 public class CommandLine {
     private Scanner scanner = new Scanner(System.in);
     private ProductManager productManager = new ProductManager();

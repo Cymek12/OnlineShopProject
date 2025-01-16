@@ -3,6 +3,9 @@ package model;
 
 import java.util.Objects;
 
+/**
+ * Klasa przechowuje informacje o kliencie oraz koncowa cene zamowienia
+ */
 public class Order {
     private String firstName;
     private String lastName;

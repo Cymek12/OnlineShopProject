@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Klasa przechowuje liste dodanych do koszyka produktów. Zawiera metody ktore pozwalaja modyfikowac liste. Dodatkowo przechowuje metody modyfikujace dodane do koszyka produkty.
+ */
 public class Cart {
     private List<Product> addedProducts = new ArrayList<>();
 

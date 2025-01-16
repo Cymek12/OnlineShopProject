@@ -3,6 +3,9 @@ package service;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Klasa zawiera logikę implementacji kodów ziżkowych
+ */
 public class DiscountManager {
     private Map<String, Double> discountCodes;
 

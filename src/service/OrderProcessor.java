@@ -17,6 +17,9 @@ public class OrderProcessor {
 
     private static int factureNumber = 0;
 
+    /**
+     * metoda pozwala na wykorzystanie wielowatkowosci przy realizacji zamowien
+     */
     public void processOrder(Order order, Cart cart){
         executorService.submit(() -> {
             generateFacture(order, cart);
@@ -29,6 +32,9 @@ public class OrderProcessor {
         executorService.shutdown();
     }
 
+    /**
+     * generuje fakture zawierajaca dane sprzedawcy, dane klienta, szczególy zamówienia, kwote do zaplaty, date wygenerowania faktury oraz termin zaplaty. Faktura jest zapisywana do pliku
+     */
     public synchronized void generateFacture(Order order, Cart cart){
         factureNumber++;
         try (FileWriter writer = new FileWriter("faktura_" + factureNumber + ".txt")){
