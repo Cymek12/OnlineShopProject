@@ -2,11 +2,9 @@ package service;
 
 import exception.EmptyCartException;
 import exception.NotAvailableInStorageException;
-import model.Computer;
-import model.Order;
-import model.Product;
-import model.Smartphone;
+import model.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -117,14 +115,22 @@ public class CommandLine {
 
     private void configureComputer(Computer computer){
         System.out.println("Konfiguracja komputera:");
-        System.out.println("Wybierz processor: (intel i3, intel i5, intel i7, intel i9, amd ryzen 5, amd ryzen 7) ");
+        System.out.println("Wybierz processor: ");
+        computer.getConfigurations().stream().filter(s -> s.getType().equals("processor"))
+                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
         String processor = scanner.nextLine();
-        System.out.println("Wybierz ilość RAM: (4, 8, 16, 32, 64, 128) ");
+        System.out.println("Wybierz ilość RAM:");
+        computer.getConfigurations().stream().filter(s -> s.getType().equals("ramSize"))
+                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
         int ramSize = scanner.nextInt();
         scanner.nextLine();
-        System.out.println("Wybierz kartę graficzną: (RTX 780, RTX 4060, RTX 6000, RTX 3070");
+        System.out.println("Wybierz kartę graficzną:");
+        computer.getConfigurations().stream().filter(s -> s.getType().equals("graphicsCard"))
+                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
         String graphicsCard = scanner.nextLine();
-        System.out.println("Wybierz pojemność dysku twardego: (128, 256, 512, 1000, 2000, 5000");
+        System.out.println("Wybierz pojemność dysku twardego:");
+        computer.getConfigurations().stream().filter(s -> s.getType().equals("storageDisk"))
+                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
         int storageSize = scanner.nextInt();
         scanner.nextLine();
 
@@ -133,7 +139,9 @@ public class CommandLine {
 
     private void configureSmartphone(Smartphone smartphone){
         System.out.println("Konfiguracja telefonu:");
-        System.out.println("Wybierz kolor: (Czarny, Biały, Czerwony, Niebieski, Zielony) ");
+        System.out.println("Wybierz kolor:");
+        smartphone.getConfigurations().stream().filter(s -> s.getType().equals("ramSize"))
+                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
         String color = scanner.nextLine();
         System.out.println("Wybierz pojemność baterii (2800, 3500, 4000, 4800)");
         int batteryCapacity = scanner.nextInt();

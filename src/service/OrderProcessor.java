@@ -87,7 +87,7 @@ public class OrderProcessor {
         int ordinalNumber = 0;
         try {
             for (Product product : cart.getAddedProducts()) {
-                result += ++ordinalNumber + " " + product.getName() + " " + product.getPrice() + "\n";
+                result += ++ordinalNumber + " " + product.getName() + " " + product.getBasePrice() + "\n";
             }
         } catch (EmptyCartException e) {
             e.getMessage();

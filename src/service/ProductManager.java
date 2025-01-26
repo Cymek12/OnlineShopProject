@@ -1,9 +1,6 @@
 package service;
 
-import model.Computer;
-import model.Electronics;
-import model.Product;
-import model.Smartphone;
+import model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.Optional;
  */
 public class ProductManager {
     private List<Product> products;
+    private ProductConfiguration productConfiguration;
 
 
     public ProductManager() {
@@ -55,14 +53,35 @@ public class ProductManager {
     }
 
     public void insertExampleData(){
-        products.add(new Electronics(1, "Wireless Mouse", 25.99, 50));
-        products.add(new Electronics(2, "Bluetooth Keyboard", 45.99, 30));
-        products.add(new Electronics(3, "External Hard Drive", 89.99, 20));
-        products.add(new Computer(101, "Gaming PC", 2499.99, 5, "Intel Core i7", 16, "NVIDIA RTX 3060", 1000));
-        products.add(new Computer(102, "Office Laptop", 999.99, 10, "AMD Ryzen 5", 8, "Integrated Graphics", 512));
-        products.add(new Computer(103, "Ultrabook", 1499.99, 8, "Intel Core i5", 16, "Integrated Graphics", 256));
-        products.add(new Smartphone(201, "Galaxy S22", 799.99, 20, "Black", 4000, "Charger, Earphones"));
-        products.add(new Smartphone(202, "iPhone 14", 1099.99, 15, "Silver", 3279, "Charger, Lightning Cable"));
-        products.add(new Smartphone(203, "Pixel 7", 599.99, 30, "White", 4350, "Charger, Protective Case"));
+
+        List<ProductConfiguration> computerConfigurations = new ArrayList<>();
+        computerConfigurations.add(new ProductConfiguration("processor", "Intel i5", 0.00));
+        computerConfigurations.add(new ProductConfiguration("processor", "Intel i7", 800.00));
+        computerConfigurations.add(new ProductConfiguration("processor", "Intel i9", 1200.00));
+        computerConfigurations.add(new ProductConfiguration("ramSize", "8GB", 0.00));
+        computerConfigurations.add(new ProductConfiguration("ramSize", "16GB", 500.00));
+        computerConfigurations.add(new ProductConfiguration("ramSize", "32GB", 1000.00));
+        computerConfigurations.add(new ProductConfiguration("graphicsCard", "NVIDIA GTX 1080", 0.00));
+        computerConfigurations.add(new ProductConfiguration("graphicsCard", "NVIDIA RTX 3060", 1200.00));
+        computerConfigurations.add(new ProductConfiguration("graphicsCard", "NVIDIA RTX 4070", 2700.00));
+        computerConfigurations.add(new ProductConfiguration("storageSize", "256", 0.00));
+        computerConfigurations.add(new ProductConfiguration("storageSize", "512", 300.00));
+        computerConfigurations.add(new ProductConfiguration("storageSize", "1000", 500.00));
+
+        List<ProductConfiguration> smartphoneConfigurations = new ArrayList<>();
+        smartphoneConfigurations.add(new ProductConfiguration("color", "Czarny", 0.00));
+        smartphoneConfigurations.add(new ProductConfiguration("color", "Niebieski", 150.00));
+        smartphoneConfigurations.add(new ProductConfiguration("color", "Zielony", 150.00));
+        smartphoneConfigurations.add(new ProductConfiguration("batteryCapacity", "2200", 0.00));
+        smartphoneConfigurations.add(new ProductConfiguration("batteryCapacity", "3200", 400.00));
+        smartphoneConfigurations.add(new ProductConfiguration("batteryCapacity", "4200", 800.00));
+
+        products.add(new Computer(1, "Gaming PC", 3000.00, 10, computerConfigurations, "Intel i5", 16, "NVIDIA GTX 3060", 512));
+        products.add(new Smartphone(2, "Telefon", 2000.00, 15, smartphoneConfigurations, "Czarny", 3000, "Ładowarka, Słuchawki"));
+        products.add(new Electronics(3, "Wireless Mouse", 25.99, 50, null));
+        products.add(new Electronics(4, "Bluetooth Keyboard", 45.99, 30, null));
+        products.add(new Electronics(5, "External Hard Drive", 89.99, 20, null));
+        products.add(new Electronics(6, "Smart TV", 4000.00, 5, null));
+
     }
 }

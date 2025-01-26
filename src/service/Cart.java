@@ -43,7 +43,7 @@ public class Cart {
     }
 
     public double getOrderPrice() {
-        return addedProducts.stream().mapToDouble(Product::getPrice).sum();
+        return addedProducts.stream().mapToDouble(Product::getBasePrice).sum();
     }
 
     public void clearAddedProducts(){
