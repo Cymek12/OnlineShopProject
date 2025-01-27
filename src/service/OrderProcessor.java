@@ -7,6 +7,8 @@ import model.Product;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class OrderProcessor {
@@ -77,7 +79,8 @@ public class OrderProcessor {
     private String getDateTimeInformation(){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDateTime now = LocalDateTime.now();
+        ZoneId zoneId = ZoneId.of("Europe/Warsaw");
+        ZonedDateTime now = ZonedDateTime.now(zoneId);
         return "\n\nData i godzina wystawienia faktury: " + now.format(dateTimeFormatter) + "\n" +
                 "Proszę opłacić zamówienie do " + now.plusDays(7).format(dateFormatter);
     }
