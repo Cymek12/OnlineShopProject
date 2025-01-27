@@ -4,6 +4,7 @@ import exception.EmptyCartException;
 import exception.NotAvailableInStorageException;
 import model.Computer;
 import model.Product;
+import model.ProductConfiguration;
 import model.Smartphone;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class Cart {
     }
 
     public double getOrderPrice() {
-        return addedProducts.stream().mapToDouble(Product::getBasePrice).sum();
+        return addedProducts.stream().mapToDouble(Product::calculateTotalPrice).sum();
     }
 
     public void clearAddedProducts(){
@@ -79,14 +80,14 @@ public class Cart {
         System.out.println("Zmieniono konfiguracje komputera!");
     }
 
-    public void configureSmartphone(Smartphone smartphone, String color, int batteryCapacity, String accessories){
-        if(color == null && accessories == null){
+    public void configureSmartphone(Smartphone smartphone, String color, int batteryCapacity, List<ProductConfiguration> configuredAccessories){
+        if(color == null && configuredAccessories == null){
             System.out.println("Proszę poprawnie określić parametry telefonu");
             return;
         }
         smartphone.setColor(color);
         smartphone.setBatteryCapacity(batteryCapacity);
-        smartphone.setAccessories(accessories);
+        smartphone.setAccessories(configuredAccessories);
 
         System.out.println("Zmieniono konfiguracje telefonu!");
     }

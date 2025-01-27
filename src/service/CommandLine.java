@@ -39,8 +39,8 @@ public class CommandLine {
             scanner.nextLine();
 
             switch (option) {
-                case 1 -> productListMenu();
-                case 2 -> addProductToCartMenu();
+                case 1 -> productManager.printProducts();
+                case 2 -> addProductToCart();
                 case 3 -> {
                     try {
                         configureProduct();
@@ -50,7 +50,7 @@ public class CommandLine {
                 }
                 case 4 -> {
                     try {
-                        cartMenu();
+                        cart();
                     } catch (EmptyCartException e) {
                         System.out.println(e.getMessage());
                     }
@@ -65,13 +65,7 @@ public class CommandLine {
         }
     }
 
-    private void productListMenu(){
-        productManager.printProducts();
-        System.out.println("\nNaciśnij \"Enter\" aby cofnąc się do głównego menu");
-        scanner.nextLine();
-    }
-
-    private void addProductToCartMenu(){
+    private void addProductToCart(){
         productManager.printProducts();
         System.out.println("\nPodaj Id produktu który chcesz dodać");
         int pickedId = scanner.nextInt();
@@ -79,13 +73,51 @@ public class CommandLine {
         Optional<Product> productOpt = productManager.findProductById(pickedId);
         if(productOpt.isPresent()){
             try {
-                cart.addProductToCart(productOpt.get());
+                Product productCopy = createProductCopy(productOpt.get());
+                cart.addProductToCart(productCopy);
             } catch (NotAvailableInStorageException e) {
                 System.out.println("!Wybrany produkt nie jest dostępny w magazynie!");
             }
         }
         else {
             System.out.println("Produkt o podanym Id nie istnieje");
+        }
+    }
+
+    private Product createProductCopy(Product product){
+        if(product instanceof Computer originalComputer){
+            return new Computer(
+                    originalComputer.getId(),
+                    originalComputer.getName(),
+                    originalComputer.getBasePrice(),
+                    originalComputer.getAvailableQuantity(),
+                    originalComputer.getConfigurations(),
+                    originalComputer.getProcessor(),
+                    originalComputer.getRamSize(),
+                    originalComputer.getGraphicsCard(),
+                    originalComputer.getStorageSize()
+            );
+        }
+        else if (product instanceof Smartphone originalSmartphone){
+            return new Smartphone(
+                    originalSmartphone.getId(),
+                    originalSmartphone.getName(),
+                    originalSmartphone.getBasePrice(),
+                    originalSmartphone.getAvailableQuantity(),
+                    originalSmartphone.getConfigurations(),
+                    originalSmartphone.getColor(),
+                    originalSmartphone.getBatteryCapacity(),
+                    originalSmartphone.getAccessories()
+            );
+        }
+        else {
+            return new Product(
+                    product.getId(),
+                    product.getName(),
+                    product.getBasePrice(),
+                    product.getAvailableQuantity(),
+                    product.getConfigurations()
+            );
         }
     }
 
@@ -116,23 +148,13 @@ public class CommandLine {
     private void configureComputer(Computer computer){
         System.out.println("Konfiguracja komputera:");
         System.out.println("Wybierz processor: ");
-        computer.getConfigurations().stream().filter(s -> s.getType().equals("processor"))
-                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
-        String processor = scanner.nextLine();
+        String processor = getConfigurationChoice(computer, "processor");
         System.out.println("Wybierz ilość RAM:");
-        computer.getConfigurations().stream().filter(s -> s.getType().equals("ramSize"))
-                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
-        int ramSize = scanner.nextInt();
-        scanner.nextLine();
+        int ramSize = Integer.parseInt(getConfigurationChoice(computer, "ramSize"));
         System.out.println("Wybierz kartę graficzną:");
-        computer.getConfigurations().stream().filter(s -> s.getType().equals("graphicsCard"))
-                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
-        String graphicsCard = scanner.nextLine();
+        String graphicsCard = getConfigurationChoice(computer, "graphicsCard");
         System.out.println("Wybierz pojemność dysku twardego:");
-        computer.getConfigurations().stream().filter(s -> s.getType().equals("storageDisk"))
-                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
-        int storageSize = scanner.nextInt();
-        scanner.nextLine();
+        int storageSize = Integer.parseInt(getConfigurationChoice(computer, "storageSize"));
 
         cart.configureComputer(computer, processor, ramSize, graphicsCard, storageSize);
     }
@@ -140,20 +162,27 @@ public class CommandLine {
     private void configureSmartphone(Smartphone smartphone){
         System.out.println("Konfiguracja telefonu:");
         System.out.println("Wybierz kolor:");
-        smartphone.getConfigurations().stream().filter(s -> s.getType().equals("ramSize"))
-                .forEach(s -> System.out.println(s.getValue() + " " + s.getAdditionalPrice() + "zł"));
-        String color = scanner.nextLine();
-        System.out.println("Wybierz pojemność baterii (2800, 3500, 4000, 4800)");
-        int batteryCapacity = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Wybierz akcesoria do telefonu (Szybka ładowarka, Etui, Szkło, Słuchawki) ");
-        String accessories = scanner.nextLine();
+        String color = getConfigurationChoice(smartphone, "color");
+        System.out.println("Wybierz pojemność baterii:");
+        int batteryCapacity = Integer.parseInt(getConfigurationChoice(smartphone, "batteryCapacity"));
+        System.out.println("Wybierz akcesoria do telefonu: (Wpisuj po przecinku)");
+        smartphone.getAccessories().forEach(s -> System.out.println(s.getValue() + " - " + s.getAdditionalPrice() + "zł"));
+        List<String> accessories = List.of(scanner.nextLine().split(","));
 
-        cart.configureSmartphone(smartphone, color, batteryCapacity, accessories);
+        List<ProductConfiguration> configuredAccessories = smartphone.getAccessories().stream().filter(s -> accessories.contains(s.getValue())).toList();
+
+        cart.configureSmartphone(smartphone, color, batteryCapacity, configuredAccessories);
+    }
+
+    private String getConfigurationChoice(Product product, String type){
+        product.getConfigurations().stream()
+                .filter(s -> s.getType().equals(type))
+                .forEach(s -> System.out.println(s.getValue() + " - " + s.getAdditionalPrice() + "zł"));
+        return scanner.nextLine();
     }
 
 
-    private void cartMenu() throws EmptyCartException {
+    private void cart() throws EmptyCartException {
         boolean isRunning = true;
         while (isRunning){
             System.out.println("Koszyk:");

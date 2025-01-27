@@ -6,10 +6,10 @@ import java.util.Objects;
 public class Smartphone extends Product{
     private String color;
     private int batteryCapacity;
-    private String accessories;
+    private List<ProductConfiguration> accessories;
 
-    public Smartphone(int id, String name, double price, int availableQuantity, List<ProductConfiguration> configurations, String color, int batteryCapacity, String accessories) {
-        super(id, name, price, availableQuantity, configurations);
+    public Smartphone(int id, String name, double basePrice, int availableQuantity, List<ProductConfiguration> configurations, String color, int batteryCapacity, List<ProductConfiguration> accessories) {
+        super(id, name, basePrice, availableQuantity, configurations);
         this.color = color;
         this.batteryCapacity = batteryCapacity;
         this.accessories = accessories;
@@ -31,11 +31,11 @@ public class Smartphone extends Product{
         this.batteryCapacity = batteryCapacity;
     }
 
-    public String getAccessories() {
+    public List<ProductConfiguration> getAccessories() {
         return accessories;
     }
 
-    public void setAccessories(String accessories) {
+    public void setAccessories(List<ProductConfiguration> accessories) {
         this.accessories = accessories;
     }
 

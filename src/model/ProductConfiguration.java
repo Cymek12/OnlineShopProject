@@ -3,9 +3,9 @@ package model;
 import java.util.Objects;
 
 public class ProductConfiguration {
-    private String type; // Typ konfiguracji, np. "Kolor", "Procesor"
-    private String value; // Wartość konfiguracji, np. "Czarny", "Intel i7"
-    private double additionalPrice; // Dodatkowa cena za konfigurację
+    private String type;
+    private String value;
+    private double additionalPrice;
 
     public ProductConfiguration(String type, String value, double additionalPrice) {
         this.type = type;
@@ -52,10 +52,6 @@ public class ProductConfiguration {
 
     @Override
     public String toString() {
-        return "ProductConfiguration{" +
-                "type='" + type + '\'' +
-                ", value='" + value + '\'' +
-                ", additionalPrice=" + additionalPrice +
-                '}';
+        return value;
     }
 }
