@@ -74,6 +74,12 @@ public class CommandLine {
         if(productOpt.isPresent()){
             try {
                 Product productCopy = createProductCopy(productOpt.get());
+
+                if(productOpt.get().getAvailableQuantity() == 0){
+                    throw new NotAvailableInStorageException("Brak produktu w magazynie");
+                }
+                productOpt.get().setAvailableQuantity(productOpt.get().getAvailableQuantity() - 1);
+
                 cart.addProductToCart(productCopy);
             } catch (NotAvailableInStorageException e) {
                 System.out.println("!Wybrany produkt nie jest dostępny w magazynie!");

@@ -18,12 +18,12 @@ public class Cart {
     private List<Product> addedProducts = new ArrayList<>();
 
     public void addProductToCart(Product product) throws NotAvailableInStorageException {
-        if(product.getAvailableQuantity() == 0){
-            throw new NotAvailableInStorageException("Brak produktu w magazynie");
-        }
+//        if(product.getAvailableQuantity() == 0){
+//            throw new NotAvailableInStorageException("Brak produktu w magazynie");
+//        }
 
         addedProducts.add(product);
-        product.setAvailableQuantity(product.getAvailableQuantity() - 1);
+//        product.setAvailableQuantity(product.getAvailableQuantity() - 1);
         System.out.println("Dodano do koszyka: " + product);
 
     }
