@@ -2,35 +2,34 @@ package service;
 
 import exception.EmptyCartException;
 import exception.NotAvailableInStorageException;
-import model.Computer;
 import model.Product;
 import model.ProductConfiguration;
-import model.Smartphone;
+import model.ProductType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 /**
- * Klasa przechowuje liste dodanych do koszyka produktów. Zawiera metody ktore pozwalaja modyfikowac liste. Dodatkowo przechowuje metody modyfikujace dodane do koszyka produkty.
+ * Klasa przechowuje liste dodanych do koszyka produktów. Zawiera metody ktore pozwalaja modyfikowac liste.
  */
 public class Cart {
-    private List<Product> addedProducts = new ArrayList<>();
+    private List<CartItem> addedProducts = new ArrayList<>();
 
-    public void addProductToCart(Product product) throws NotAvailableInStorageException {
-        if(product.getAvailableQuantity() == 0){
+    public void addProductToCart(CartItem cartItem) throws NotAvailableInStorageException {
+        if(cartItem.getProduct().getAvailableQuantity() == 0){
             throw new NotAvailableInStorageException("Brak produktu w magazynie");
         }
 
-        addedProducts.add(product);
-        product.setAvailableQuantity(product.getAvailableQuantity() - 1);
-        System.out.println("Dodano do koszyka: " + DisplayFormatter.getProductToCart(product));
+        addedProducts.add(cartItem);
+        synchronized (Cart.class){
+            cartItem.getProduct().setAvailableQuantity(cartItem.getProduct().getAvailableQuantity() - 1);
+        }
+        System.out.println("Dodano do koszyka: " + ProductFormatter.getProductToCart(cartItem));
 
     }
 
-    public List<Product> getAddedProducts() throws EmptyCartException {
+    public List<CartItem> getAddedProducts() throws EmptyCartException {
         if(addedProducts.isEmpty()){
             throw new EmptyCartException("Niepowodzenie operacji - Koszyk jest pusty!");
         }
@@ -42,16 +41,16 @@ public class Cart {
     }
 
     public void printAddedProducts() throws EmptyCartException {
-        for (Product addedProduct : getAddedProducts()) {
-            System.out.println(DisplayFormatter.getProductToCart(addedProduct));
+        for (CartItem addedProduct : getAddedProducts()) {
+            System.out.println(ProductFormatter.getProductToCart(addedProduct));
         }
     }
 
     public double getOrderPrice() {
-        double basePriceSum = addedProducts.stream().mapToDouble(Product::getBasePrice).sum();
+        double basePriceSum = addedProducts.stream().mapToDouble(s -> s.getProduct().getBasePrice()).sum();
 
         double additionalSum = addedProducts.stream()
-                .map(s -> s.getChosenConfiguration().stream()
+                .map(s -> s.getChosenConfigurations().stream()
                         .mapToDouble(ProductConfiguration::getAdditionalPrice))
                 .flatMapToDouble(ds -> ds)
                 .sum();
@@ -59,47 +58,37 @@ public class Cart {
         return  basePriceSum + additionalSum;
     }
 
+    /**
+     * Usuwa wszystkie produkty z koszyka i przywraca dostępność w magazynie
+     */
     public void clearAddedProducts(){
+        for (CartItem addedProduct : addedProducts) {
+            Product product = addedProduct.getProduct();
+            synchronized (Cart.class){
+                product.setAvailableQuantity(product.getAvailableQuantity() + 1);
+            }
+        }
         addedProducts.clear();
     }
 
-    public Optional<Product> findAddedProductById(int id){
-        return addedProducts.stream().filter(product -> product.getId() == id).findFirst();
+    public Optional<CartItem> findAddedProductById(int id){
+        return addedProducts.stream().filter(p -> p.getProduct().getId() == id).findFirst();
     }
 
+    /**
+     * Usuwa wybrany produkt z koszyka i przywraca dostępność w magazynie
+     */
     public void deleteProductFromCart(int id){
-        Optional<Product> optAddedProduct = findAddedProductById(id);
-        if(optAddedProduct.isPresent()){
-            addedProducts.remove(optAddedProduct.get());
-            optAddedProduct.get().setAvailableQuantity(optAddedProduct.get().getAvailableQuantity() + 1);
-            System.out.println("Usunięto produkt z koszyka");
-        }
-        else {
+        Optional<CartItem> optAddedProduct = findAddedProductById(id);
+        if(optAddedProduct.isEmpty()){
             System.out.println("Produkt o podanym Id nie znajduje się w koszyku");
+            return;
         }
-    }
-
-    public void configureComputer(Product product, List<ProductConfiguration> chosenConfiguration){
-        for (Product addedProduct : addedProducts) {
-            if(addedProduct.getId() == product.getId()){
-                addedProduct.setChosenConfiguration(chosenConfiguration);
-            }
+        addedProducts.remove(optAddedProduct.get());
+        Product product = optAddedProduct.get().getProduct();
+        synchronized (Cart.class){
+            product.setAvailableQuantity(product.getAvailableQuantity() + 1);
         }
-        System.out.println("Zmieniono konfiguracje komputera!");
-        System.out.println(product);
-        chosenConfiguration.forEach(System.out::println);
-    }
-
-    public void configureSmartphone(Product product, List<ProductConfiguration> chosenConfiguration, List<ProductConfiguration> chosenAccessories){
-        for (Product addedProduct : addedProducts) {
-            if(addedProduct.getId() == product.getId()){
-                addedProduct.setChosenConfiguration(chosenConfiguration);
-                addedProduct.setAccessories(chosenAccessories);
-            }
-        }
-        System.out.println("Zmieniono konfiguracje telefonu!");
-        System.out.println(product);
-        chosenConfiguration.forEach(System.out::println);
-        chosenAccessories.forEach(System.out::println);
+        System.out.println("Usunięto produkt z koszyka");
     }
 }

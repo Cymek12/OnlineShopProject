@@ -1,20 +1,18 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 public class Product {
     private int id;
-    private String type;
+    private ProductType type;
     private String name;
     private double basePrice;
     private int availableQuantity;
     private List<ProductConfiguration> availableConfigurations;
-    private List<ProductConfiguration> chosenConfiguration = new ArrayList<>();
-    private List<ProductConfiguration> accessories = new ArrayList<>();
 
-    public Product(int id, String type, String name, double basePrice, int availableQuantity, List<ProductConfiguration> availableConfigurations) {
+    public Product(int id, ProductType type, String name, double basePrice, int availableQuantity, List<ProductConfiguration> availableConfigurations) {
         this.id = id;
         this.type = type;
         this.name = name;
@@ -31,11 +29,11 @@ public class Product {
         this.id = id;
     }
 
-    public String getType() {
+    public ProductType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ProductType type) {
         this.type = type;
     }
 
@@ -71,39 +69,19 @@ public class Product {
         this.availableConfigurations = availableConfigurations;
     }
 
-    public List<ProductConfiguration> getChosenConfiguration() {
-        return chosenConfiguration;
-    }
-
-    public void setChosenConfiguration(List<ProductConfiguration> chosenConfiguration) {
-        this.chosenConfiguration = chosenConfiguration;
-    }
-
-    public List<ProductConfiguration> getAccessories() {
-        return accessories;
-    }
-
-    public void setAccessories(List<ProductConfiguration> accessories) {
-        this.accessories = accessories;
-    }
-
-    public double calculateTotalPrice() {
-        return 1;//chosenConfiguration.stream().mapToDouble(ProductConfiguration::getAdditionalPrice).sum() + basePrice;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Product product)) return false;
-        return id == product.id && Double.compare(basePrice, product.basePrice) == 0 && availableQuantity == product.availableQuantity && Objects.equals(type, product.type) && Objects.equals(name, product.name) && Objects.equals(availableConfigurations, product.availableConfigurations) && Objects.equals(chosenConfiguration, product.chosenConfiguration) && Objects.equals(accessories, product.accessories);
+        return id == product.id && Double.compare(basePrice, product.basePrice) == 0 && availableQuantity == product.availableQuantity && type == product.type && Objects.equals(name, product.name) && Objects.equals(availableConfigurations, product.availableConfigurations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, name, basePrice, availableQuantity, availableConfigurations, chosenConfiguration, accessories);
+        return Objects.hash(id, type, name, basePrice, availableQuantity, availableConfigurations);
     }
 
     @Override
     public String toString() {
-        return "Id: " + id + ", nazwa: " + name + ", cena podstawowa:" + basePrice + "zł, dostępność: " + availableQuantity;
+        return "Id: " + id + ", nazwa: " + name + ", cena podstawowa: " + basePrice + "zł, dostępność: " + availableQuantity;
     }
 }

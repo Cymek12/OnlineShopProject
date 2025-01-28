@@ -2,11 +2,9 @@ package service;
 
 import exception.EmptyCartException;
 import model.Order;
-import model.Product;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +16,7 @@ public class OrderProcessor {
     /**
      * generuje fakture zawierajaca dane sprzedawcy, dane klienta, szczególy zamówienia, kwote do zaplaty, date wygenerowania faktury oraz termin zaplaty. Faktura jest zapisywana do pliku
      */
-    public void generateFacture(Order order, Cart cart){
+    public void generateInvoice(Order order, Cart cart){
         synchronized (OrderProcessor.class) {
             documentNumber++;
             try (FileWriter writer = new FileWriter("faktura_" + documentNumber + ".txt")) {
@@ -26,7 +24,7 @@ public class OrderProcessor {
                 writer.write(getSellerInformation());
                 writer.write(getBuyerInformation(order));
                 writer.write(getOrderedProductsInformation(cart));
-                writer.write("\nDo zapłaty: %s".formatted(order.getRoundedOrderPrice()));
+                writer.write("\nDo zapłaty: " + order.getRoundedOrderPrice());
                 writer.write(getDateTimeInformation());
                 writer.write("\nZamówienie zostanie wysłane w ciągu 7 dni roboczych od zaksięgowania wpłaty");
 
@@ -82,6 +80,19 @@ public class OrderProcessor {
                 order.getEmailAddress() + "\n";
     }
 
+    public String getOrderedProductsInformation(Cart cart){
+        String result = "\nLp. |" + " Nazwa towaru |" + " Cena Brutto\n";
+        int ordinalNumber = 0;
+        try {
+            for (CartItem addedProduct : cart.getAddedProducts()) {
+                result += ++ordinalNumber + " " + ProductFormatter.getProductToInvoice(addedProduct) + "\n";
+            }
+        } catch (EmptyCartException e) {
+            e.getMessage();
+        }
+        return result;
+    }
+
     private String getDateTimeInformation(){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -89,20 +100,6 @@ public class OrderProcessor {
         ZonedDateTime now = ZonedDateTime.now(zoneId);
         return "\n\nData i godzina wystawienia faktury: " + now.format(dateTimeFormatter) + "\n" +
                 "Proszę opłacić zamówienie do " + now.plusDays(7).format(dateFormatter);
-    }
-
-    public String getOrderedProductsInformation(Cart cart){
-        String result = "\nLp. |" + " Nazwa towaru |" + " Cena Brutto\n";
-        int ordinalNumber = 0;
-        try {
-            for (Product product : cart.getAddedProducts()) {
-                result += ++ordinalNumber + DisplayFormatter.getProductToInvoice(product) + "\n";
-            }
-        } catch (EmptyCartException e) {
-            e.getMessage();
-        }
-        return result;
-
     }
 
 }
