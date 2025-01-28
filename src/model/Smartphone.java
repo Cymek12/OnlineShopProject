@@ -3,16 +3,25 @@ package model;
 import java.util.List;
 import java.util.Objects;
 
-public class Smartphone extends Product{
+public class Smartphone{
+    private Product product;
     private String color;
     private int batteryCapacity;
     private List<ProductConfiguration> accessories;
 
-    public Smartphone(int id, String name, double basePrice, int availableQuantity, List<ProductConfiguration> configurations, String color, int batteryCapacity, List<ProductConfiguration> accessories) {
-        super(id, name, basePrice, availableQuantity, configurations);
+    public Smartphone(Product product, String color, int batteryCapacity, List<ProductConfiguration> accessories) {
+        this.product = product;
         this.color = color;
         this.batteryCapacity = batteryCapacity;
         this.accessories = accessories;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public String getColor() {
@@ -42,17 +51,16 @@ public class Smartphone extends Product{
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Smartphone that)) return false;
-        if (!super.equals(o)) return false;
-        return batteryCapacity == that.batteryCapacity && Objects.equals(color, that.color) && Objects.equals(accessories, that.accessories);
+        return batteryCapacity == that.batteryCapacity && Objects.equals(product, that.product) && Objects.equals(color, that.color) && Objects.equals(accessories, that.accessories);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), color, batteryCapacity, accessories);
+        return Objects.hash(product, color, batteryCapacity, accessories);
     }
 
     @Override
     public String toString() {
-        return super.toString() + ", kolor: " + color + ", pojemność baterii: " + batteryCapacity + ", akcesoria: " + accessories;
+        return product + ", kolor: " + color + ", pojemność baterii: " + batteryCapacity + ", akcesoria: " + accessories;
     }
 }

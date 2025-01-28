@@ -1,27 +1,37 @@
 package model;
 
-import java.util.List;
+import model.utils.Processor;
+
 import java.util.Objects;
 
-public class Computer extends Product{
-    private String processor;
+public class Computer{
+    private Product product;
+    private Processor processor;
     private int ramSize;
     private String graphicsCard;
     private int storageSize;
 
-    public Computer(int id, String name, double price, int availableQuantity, List<ProductConfiguration> configurations, String processor, int ramSize, String graphicsCard, int storageSize) {
-        super(id, name, price, availableQuantity, configurations);
+    public Computer(Product product, Processor processor, int ramSize, String graphicsCard, int storageSize) {
+        this.product = product;
         this.processor = processor;
         this.ramSize = ramSize;
         this.graphicsCard = graphicsCard;
         this.storageSize = storageSize;
     }
 
-    public String getProcessor() {
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Processor getProcessor() {
         return processor;
     }
 
-    public void setProcessor(String processor) {
+    public void setProcessor(Processor processor) {
         this.processor = processor;
     }
 
@@ -52,17 +62,16 @@ public class Computer extends Product{
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Computer computer)) return false;
-        if (!super.equals(o)) return false;
-        return ramSize == computer.ramSize && storageSize == computer.storageSize && Objects.equals(processor, computer.processor) && Objects.equals(graphicsCard, computer.graphicsCard);
+        return ramSize == computer.ramSize && storageSize == computer.storageSize && Objects.equals(product, computer.product) && processor == computer.processor && Objects.equals(graphicsCard, computer.graphicsCard);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), processor, ramSize, graphicsCard, storageSize);
+        return Objects.hash(product, processor, ramSize, graphicsCard, storageSize);
     }
 
     @Override
     public String toString() {
-        return super.toString() + ", procesor: " + processor + ", ilość RAM: " + ramSize + ", karta graficzna: " + graphicsCard + ", wielkość dysku: " + storageSize;
+        return product + ", procesor: " + processor + ", ilość RAM: " + ramSize + ", karta graficzna: " + graphicsCard + ", wielkość dysku: " + storageSize;
     }
 }

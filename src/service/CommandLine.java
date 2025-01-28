@@ -2,12 +2,11 @@ package service;
 
 import exception.EmptyCartException;
 import exception.NotAvailableInStorageException;
+import exception.WrongIdException;
 import model.*;
+import model.utils.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-
+import java.util.*;
 
 /**
  * Klasa obsługuje wyświetlanie aplikacji w konsoli systemowej
@@ -32,9 +31,8 @@ public class CommandLine {
         while (isRunning){
             System.out.println("1. Wyświetl listę produktów");
             System.out.println("2. Dodaj produkt do koszyka");
-            System.out.println("3. Skonfiguruj produkt w koszyku");
-            System.out.println("4. Przejdź do koszyka");
-            System.out.println("5. Zamknij program");
+            System.out.println("3. Przejdź do koszyka");
+            System.out.println("4. Zamknij program");
             int option = scanner.nextInt();
             scanner.nextLine();
 
@@ -43,19 +41,12 @@ public class CommandLine {
                 case 2 -> addProductToCart();
                 case 3 -> {
                     try {
-                        configureProduct();
-                    } catch (EmptyCartException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case 4 -> {
-                    try {
                         cart();
                     } catch (EmptyCartException e) {
                         System.out.println(e.getMessage());
                     }
                 }
-                case 5 -> {
+                case 4 -> {
                     System.out.println("Zamykam aplikacje");
                     isRunning = false;
                     scanner.close();
@@ -73,118 +64,14 @@ public class CommandLine {
         Optional<Product> productOpt = productManager.findProductById(pickedId);
         if(productOpt.isPresent()){
             try {
-                Product productCopy = createProductCopy(productOpt.get());
-
-                if(productOpt.get().getAvailableQuantity() == 0){
-                    throw new NotAvailableInStorageException("Brak produktu w magazynie");
-                }
-                productOpt.get().setAvailableQuantity(productOpt.get().getAvailableQuantity() - 1);
-
-                cart.addProductToCart(productCopy);
+                cart.addProductToCart(productOpt.get());
             } catch (NotAvailableInStorageException e) {
-                System.out.println("!Wybrany produkt nie jest dostępny w magazynie!");
+                System.out.println(e.getMessage());
             }
         }
         else {
             System.out.println("Produkt o podanym Id nie istnieje");
         }
-    }
-
-    private Product createProductCopy(Product product){
-        if(product instanceof Computer originalComputer){
-            return new Computer(
-                    originalComputer.getId(),
-                    originalComputer.getName(),
-                    originalComputer.getBasePrice(),
-                    originalComputer.getAvailableQuantity(),
-                    originalComputer.getConfigurations(),
-                    originalComputer.getProcessor(),
-                    originalComputer.getRamSize(),
-                    originalComputer.getGraphicsCard(),
-                    originalComputer.getStorageSize()
-            );
-        }
-        else if (product instanceof Smartphone originalSmartphone){
-            return new Smartphone(
-                    originalSmartphone.getId(),
-                    originalSmartphone.getName(),
-                    originalSmartphone.getBasePrice(),
-                    originalSmartphone.getAvailableQuantity(),
-                    originalSmartphone.getConfigurations(),
-                    originalSmartphone.getColor(),
-                    originalSmartphone.getBatteryCapacity(),
-                    originalSmartphone.getAccessories()
-            );
-        }
-        else {
-            return new Product(
-                    product.getId(),
-                    product.getName(),
-                    product.getBasePrice(),
-                    product.getAvailableQuantity(),
-                    product.getConfigurations()
-            );
-        }
-    }
-
-    private void configureProduct() throws EmptyCartException {
-        System.out.println("Koszyk:");
-        cart.printAddedProducts();
-        System.out.println("\nPodaj id produktu którego parametry chcesz edytować:");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<Product> optAddedProduct = cart.findAddedProductById(id);
-        if(optAddedProduct.isPresent()){
-            if(optAddedProduct.get() instanceof Computer computer){
-                configureComputer(computer);
-            }
-            else if(optAddedProduct.get() instanceof Smartphone smartphone){
-                configureSmartphone(smartphone);
-            }
-            else {
-                System.out.println("Produkt o podanym Id nie podlega konfiguracji");
-            }
-        }
-        else {
-            System.out.println("Produkt o podanym Id nie znajduje się w koszyku");
-        }
-    }
-
-
-    private void configureComputer(Computer computer){
-        System.out.println("Konfiguracja komputera:");
-        System.out.println("Wybierz processor: ");
-        String processor = getConfigurationChoice(computer, "processor");
-        System.out.println("Wybierz ilość RAM:");
-        int ramSize = Integer.parseInt(getConfigurationChoice(computer, "ramSize"));
-        System.out.println("Wybierz kartę graficzną:");
-        String graphicsCard = getConfigurationChoice(computer, "graphicsCard");
-        System.out.println("Wybierz pojemność dysku twardego:");
-        int storageSize = Integer.parseInt(getConfigurationChoice(computer, "storageSize"));
-
-        cart.configureComputer(computer, processor, ramSize, graphicsCard, storageSize);
-    }
-
-    private void configureSmartphone(Smartphone smartphone){
-        System.out.println("Konfiguracja telefonu:");
-        System.out.println("Wybierz kolor:");
-        String color = getConfigurationChoice(smartphone, "color");
-        System.out.println("Wybierz pojemność baterii:");
-        int batteryCapacity = Integer.parseInt(getConfigurationChoice(smartphone, "batteryCapacity"));
-        System.out.println("Wybierz akcesoria do telefonu: (Wpisuj po przecinku)");
-        smartphone.getAccessories().forEach(s -> System.out.println(s.getValue() + " - " + s.getAdditionalPrice() + "zł"));
-        List<String> accessories = List.of(scanner.nextLine().split(","));
-
-        List<ProductConfiguration> configuredAccessories = smartphone.getAccessories().stream().filter(s -> accessories.contains(s.getValue())).toList();
-
-        cart.configureSmartphone(smartphone, color, batteryCapacity, configuredAccessories);
-    }
-
-    private String getConfigurationChoice(Product product, String type){
-        product.getConfigurations().stream()
-                .filter(s -> s.getType().equals(type))
-                .forEach(s -> System.out.println(s.getValue() + " - " + s.getAdditionalPrice() + "zł"));
-        return scanner.nextLine();
     }
 
 
@@ -196,31 +83,41 @@ public class CommandLine {
             System.out.println("\nDo zapłaty: " + (Math.round(cart.getOrderPrice() * 100.0) / 100.0) + "zł");
 
             System.out.println("1. Finalizuj zamówienie");
-            System.out.println("2. Usuń wszystkie produkty z koszyka");
-            System.out.println("3. Usuń produkt z koszyka");
-            System.out.println("4. Cofnij");
+            System.out.println("2. Skonfiguruj produkt w koszyku");
+            System.out.println("3. Usuń wszystkie produkty z koszyka");
+            System.out.println("4. Usuń produkt z koszyka");
+            System.out.println("5. Cofnij");
             int option = scanner.nextInt();
             scanner.nextLine();
             switch (option) {
                 case 1 -> finalizeOrder();
-                case 2 -> {
+                case 2 -> configureProduct();
+                case 3 -> {
                     cart.clearAddedProducts();
                     System.out.println("Usunięto produkty z koszyka");
                     mainMenu();
                 }
-                case 3 -> {
+                case 4 -> {
                     deleteProductFromCart();
                     if(cart.isCartEmpty()){
                         mainMenu();
                     }
                 }
-                case 4 -> isRunning = false;
+                case 5 -> isRunning = false;
                 default -> System.out.println("Wybrano niepoprawną opcję");
             }
         }
     }
 
-    private void finalizeOrder(){
+    private void finalizeOrder() throws EmptyCartException {
+        for (Product addedProduct : cart.getAddedProducts()) {
+            if(addedProduct.getType().equals("Computer") || addedProduct.getType().equals("Smartphone")){
+                if(addedProduct.getChosenConfiguration().isEmpty()){
+                    System.out.println("Proszę najpierw skonfigurować produkty");
+                    return;
+                }
+            }
+        }
         System.out.println("Podaj dane do faktury i wysyłki:");
         System.out.print("Imię: ");
         String firstName = scanner.nextLine();
@@ -244,8 +141,112 @@ public class CommandLine {
         orderProcessor.writeOrderToFile(cartForGenerateFacture);
         orderProcessor.writeUserToFile(order);
         cart.clearAddedProducts();
-
     }
+
+
+    private void configureProduct() throws EmptyCartException {
+        System.out.println("Koszyk:");
+        cart.printAddedProducts();
+        System.out.println("\nPodaj id produktu który chcesz skonfigurować:");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        Optional<Product> optAddedProduct = cart.findAddedProductById(id);
+        if(optAddedProduct.isPresent()){
+            if(optAddedProduct.get().getType().equals("Computer")) {
+                configureComputer(optAddedProduct.get());
+            }
+            else if(optAddedProduct.get().getType().equals("Smartphone")){
+                configureSmartphone(optAddedProduct.get());
+            }
+            else {
+                System.out.println("Produkt o podanym Id nie podlega konfiguracji");
+            }
+        }
+        else {
+            System.out.println("Produkt o podanym Id nie znajduje się w koszyku");
+        }
+    }
+
+
+    private void configureComputer(Product product){
+        List<ProductConfiguration> chosenConfiguration = new ArrayList<>();
+        System.out.println("Konfiguracja komputera:");
+        try {
+            System.out.println("Wybierz processor: ");
+            Processor.printProcessors();
+            Processor processor = Processor.findProcessorById(scanner.nextInt());
+            System.out.println("Wybierz ilość RAM:");
+            RamSize.printRamSizes();
+            RamSize ramSize = RamSize.findRamSizeById(scanner.nextInt());
+            System.out.println("Wybierz kartę graficzną:");
+            GraphicsCard.printGraphicsCards();
+            GraphicsCard graphicsCard = GraphicsCard.findGraphicsCardById(scanner.nextInt());
+            System.out.println("Wybierz pojemność dysku twardego:");
+            StorageSize.printStorageSizes();
+            StorageSize storageSize = StorageSize.findStorageSizeById(scanner.nextInt());
+
+            chosenConfiguration.add(new ProductConfiguration<>(processor));
+            chosenConfiguration.add(new ProductConfiguration<>(ramSize));
+            chosenConfiguration.add(new ProductConfiguration<>(graphicsCard));
+            chosenConfiguration.add(new ProductConfiguration<>(storageSize));
+
+        } catch (WrongIdException e) {
+            throw new RuntimeException(e);
+        }
+
+        cart.configureComputer(product, chosenConfiguration);
+    }
+
+    private void configureSmartphone(Product product){
+        List<ProductConfiguration> chosenConfiguration = new ArrayList<>();
+        List<ProductConfiguration> chosenAccessories;
+        System.out.println("Konfiguracja telefonu:");
+        try {
+            System.out.println("Wybierz kolor:");
+            Color.printColors();
+            Color color = Color.findColorById(scanner.nextInt());
+            System.out.println("Wybierz pojemność baterii:");
+            BatteryCapacity.printBatteryCapacities();
+            BatteryCapacity batteryCapacity = BatteryCapacity.findBatteryCapacityById(scanner.nextInt());
+
+            chosenAccessories = getChosenAccessories();
+            chosenConfiguration.add(new ProductConfiguration<>(color));
+            chosenConfiguration.add(new ProductConfiguration<>(batteryCapacity));
+
+        } catch (WrongIdException e) {
+            throw new RuntimeException(e);
+        }
+
+        cart.configureSmartphone(product, chosenConfiguration, chosenAccessories);
+    }
+
+    private List<ProductConfiguration> getChosenAccessories() throws WrongIdException {
+        List<ProductConfiguration> resultList = new ArrayList<>();
+        System.out.println("Czy chcesz dodać akcesoria do zamówienia?");
+        System.out.println("1. Tak");
+        System.out.println("2. Nie");
+        int addAccessoriesOption = scanner.nextInt();
+        if(addAccessoriesOption  == 2){
+            return resultList;
+        }
+
+        while (true) {
+            System.out.println("Wybierz akcesoria:");
+            Accessories.printAccessories();
+            Accessories accessories = Accessories.findAccessoriesById(scanner.nextInt());
+            resultList.add(new ProductConfiguration<>(accessories));
+
+            System.out.println("Czy chcesz dodać kolejne akcesorium?");
+            System.out.println("1. Tak");
+            System.out.println("2. Nie");
+            int accessoryOption = scanner.nextInt();
+            if (accessoryOption == 2) {
+                break;
+            }
+        }
+        return resultList;
+    }
+
 
     private void deleteProductFromCart() throws EmptyCartException {
         System.out.println("Koszyk:");
@@ -254,6 +255,5 @@ public class CommandLine {
         int id = scanner.nextInt();
         scanner.nextLine();
         cart.deleteProductFromCart(id);
-
     }
 }

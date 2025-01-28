@@ -1,21 +1,26 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Product {
     private int id;
+    private String type;
     private String name;
     private double basePrice;
     private int availableQuantity;
-    private List<ProductConfiguration> configurations;
+    private List<ProductConfiguration> availableConfigurations;
+    private List<ProductConfiguration> chosenConfiguration = new ArrayList<>();
+    private List<ProductConfiguration> accessories = new ArrayList<>();
 
-    public Product(int id, String name, double basePrice, int availableQuantity, List<ProductConfiguration> configurations) {
+    public Product(int id, String type, String name, double basePrice, int availableQuantity, List<ProductConfiguration> availableConfigurations) {
         this.id = id;
+        this.type = type;
         this.name = name;
         this.basePrice = basePrice;
         this.availableQuantity = availableQuantity;
-        this.configurations = configurations;
+        this.availableConfigurations = availableConfigurations;
     }
 
     public int getId() {
@@ -24,6 +29,14 @@ public class Product {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -50,33 +63,43 @@ public class Product {
         this.availableQuantity = availableQuantity;
     }
 
-    public List<ProductConfiguration> getConfigurations() {
-        return configurations;
+    public List<ProductConfiguration> getAvailableConfigurations() {
+        return availableConfigurations;
     }
 
-    public void setConfigurations(List<ProductConfiguration> configurations) {
-        this.configurations = configurations;
+    public void setAvailableConfigurations(List<ProductConfiguration> availableConfigurations) {
+        this.availableConfigurations = availableConfigurations;
     }
 
-    public void addConfiguration(ProductConfiguration configuration) {
-        this.configurations.add(configuration);
+    public List<ProductConfiguration> getChosenConfiguration() {
+        return chosenConfiguration;
+    }
+
+    public void setChosenConfiguration(List<ProductConfiguration> chosenConfiguration) {
+        this.chosenConfiguration = chosenConfiguration;
+    }
+
+    public List<ProductConfiguration> getAccessories() {
+        return accessories;
+    }
+
+    public void setAccessories(List<ProductConfiguration> accessories) {
+        this.accessories = accessories;
     }
 
     public double calculateTotalPrice() {
-        return configurations.stream().mapToDouble(ProductConfiguration::getAdditionalPrice).sum() + basePrice;
+        return 1;//chosenConfiguration.stream().mapToDouble(ProductConfiguration::getAdditionalPrice).sum() + basePrice;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return id == product.id && Double.compare(basePrice, product.basePrice) == 0 && availableQuantity == product.availableQuantity && Objects.equals(name, product.name) && Objects.equals(configurations, product.configurations);
+        if (!(o instanceof Product product)) return false;
+        return id == product.id && Double.compare(basePrice, product.basePrice) == 0 && availableQuantity == product.availableQuantity && Objects.equals(type, product.type) && Objects.equals(name, product.name) && Objects.equals(availableConfigurations, product.availableConfigurations) && Objects.equals(chosenConfiguration, product.chosenConfiguration) && Objects.equals(accessories, product.accessories);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, basePrice, availableQuantity, configurations);
+        return Objects.hash(id, type, name, basePrice, availableQuantity, availableConfigurations, chosenConfiguration, accessories);
     }
 
     @Override

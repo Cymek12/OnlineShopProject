@@ -10,6 +10,8 @@ import model.Smartphone;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 /**
  * Klasa przechowuje liste dodanych do koszyka produktów. Zawiera metody ktore pozwalaja modyfikowac liste. Dodatkowo przechowuje metody modyfikujace dodane do koszyka produkty.
@@ -18,13 +20,13 @@ public class Cart {
     private List<Product> addedProducts = new ArrayList<>();
 
     public void addProductToCart(Product product) throws NotAvailableInStorageException {
-//        if(product.getAvailableQuantity() == 0){
-//            throw new NotAvailableInStorageException("Brak produktu w magazynie");
-//        }
+        if(product.getAvailableQuantity() == 0){
+            throw new NotAvailableInStorageException("Brak produktu w magazynie");
+        }
 
         addedProducts.add(product);
-//        product.setAvailableQuantity(product.getAvailableQuantity() - 1);
-        System.out.println("Dodano do koszyka: " + product);
+        product.setAvailableQuantity(product.getAvailableQuantity() - 1);
+        System.out.println("Dodano do koszyka: " + DisplayFormatter.getProductToCart(product));
 
     }
 
@@ -40,11 +42,21 @@ public class Cart {
     }
 
     public void printAddedProducts() throws EmptyCartException {
-        getAddedProducts().forEach(System.out::println);
+        for (Product addedProduct : getAddedProducts()) {
+            System.out.println(DisplayFormatter.getProductToCart(addedProduct));
+        }
     }
 
     public double getOrderPrice() {
-        return addedProducts.stream().mapToDouble(Product::calculateTotalPrice).sum();
+        double basePriceSum = addedProducts.stream().mapToDouble(Product::getBasePrice).sum();
+
+        double additionalSum = addedProducts.stream()
+                .map(s -> s.getChosenConfiguration().stream()
+                        .mapToDouble(ProductConfiguration::getAdditionalPrice))
+                .flatMapToDouble(ds -> ds)
+                .sum();
+
+        return  basePriceSum + additionalSum;
     }
 
     public void clearAddedProducts(){
@@ -67,29 +79,27 @@ public class Cart {
         }
     }
 
-    public void configureComputer(Computer computer, String processor, int ramSize, String graphicsCard, int storageSize){
-        if(processor == null && graphicsCard == null){
-            System.out.println("Proszę poprawnie określić parametry komputera");
-            return;
+    public void configureComputer(Product product, List<ProductConfiguration> chosenConfiguration){
+        for (Product addedProduct : addedProducts) {
+            if(addedProduct.getId() == product.getId()){
+                addedProduct.setChosenConfiguration(chosenConfiguration);
+            }
         }
-        computer.setProcessor(processor);
-        computer.setRamSize(ramSize);
-        computer.setGraphicsCard(graphicsCard);
-        computer.setStorageSize(storageSize);
-
         System.out.println("Zmieniono konfiguracje komputera!");
+        System.out.println(product);
+        chosenConfiguration.forEach(System.out::println);
     }
 
-    public void configureSmartphone(Smartphone smartphone, String color, int batteryCapacity, List<ProductConfiguration> configuredAccessories){
-        if(color == null && configuredAccessories == null){
-            System.out.println("Proszę poprawnie określić parametry telefonu");
-            return;
+    public void configureSmartphone(Product product, List<ProductConfiguration> chosenConfiguration, List<ProductConfiguration> chosenAccessories){
+        for (Product addedProduct : addedProducts) {
+            if(addedProduct.getId() == product.getId()){
+                addedProduct.setChosenConfiguration(chosenConfiguration);
+                addedProduct.setAccessories(chosenAccessories);
+            }
         }
-        smartphone.setColor(color);
-        smartphone.setBatteryCapacity(batteryCapacity);
-        smartphone.setAccessories(configuredAccessories);
-
         System.out.println("Zmieniono konfiguracje telefonu!");
+        System.out.println(product);
+        chosenConfiguration.forEach(System.out::println);
+        chosenAccessories.forEach(System.out::println);
     }
-
 }

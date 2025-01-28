@@ -18,46 +18,52 @@ public class OrderProcessor {
     /**
      * generuje fakture zawierajaca dane sprzedawcy, dane klienta, szczególy zamówienia, kwote do zaplaty, date wygenerowania faktury oraz termin zaplaty. Faktura jest zapisywana do pliku
      */
-    public synchronized void generateFacture(Order order, Cart cart){
-        documentNumber++;
-        try (FileWriter writer = new FileWriter("faktura_" + documentNumber + ".txt")){
-            writer.write("Faktura numer: " + documentNumber + "\n");
-            writer.write(getSellerInformation());
-            writer.write(getBuyerInformation(order));
-            writer.write(getOrderedProductsInformation(cart));
-            writer.write("\nDo zapłaty: %s".formatted(order.getRoundedOrderPrice()));
-            writer.write(getDateTimeInformation());
-            writer.write("\nZamówienie zostanie wysłane w ciągu 7 dni roboczych od zaksięgowania wpłaty");
+    public void generateFacture(Order order, Cart cart){
+        synchronized (OrderProcessor.class) {
+            documentNumber++;
+            try (FileWriter writer = new FileWriter("faktura_" + documentNumber + ".txt")) {
+                writer.write("Faktura numer: " + documentNumber + "\n");
+                writer.write(getSellerInformation());
+                writer.write(getBuyerInformation(order));
+                writer.write(getOrderedProductsInformation(cart));
+                writer.write("\nDo zapłaty: %s".formatted(order.getRoundedOrderPrice()));
+                writer.write(getDateTimeInformation());
+                writer.write("\nZamówienie zostanie wysłane w ciągu 7 dni roboczych od zaksięgowania wpłaty");
 
-            System.out.println("Faktura została wygenerowana");
+                System.out.println("Faktura została wygenerowana");
 
-        } catch (IOException e) {
-            System.out.println("!Błąd podczas generowania faktury!");
+            } catch (IOException e) {
+                System.out.println("!Błąd podczas generowania faktury!");
+            }
         }
     }
 
     /**
      * Metoda obsluguje zapis szczególów dotyczacych zamówienie do pliku tekstowego
      */
-    public synchronized void writeOrderToFile(Cart cart) {
-        try (FileWriter writer = new FileWriter("zamowienie_" + documentNumber + ".txt")) {
-            writer.write("Zamówienie numer: " + documentNumber + "\n");
-            writer.write(getOrderedProductsInformation(cart));
-        } catch (IOException e) {
-            System.out.println("Błąd generowania pliku z zamówienem");
+    public void writeOrderToFile(Cart cart) {
+        synchronized (OrderProcessor.class) {
+            try (FileWriter writer = new FileWriter("zamowienie_" + documentNumber + ".txt")) {
+                writer.write("Zamówienie numer: " + documentNumber + "\n");
+                writer.write(getOrderedProductsInformation(cart));
+            } catch (IOException e) {
+                System.out.println("Błąd generowania pliku z zamówienem");
+            }
         }
     }
 
     /**
      * Metoda obsluguje zapis szczególów dotyczacych uzytkownika i adresu wysylki do pliku tekstowego
      */
-    public synchronized void writeUserToFile(Order order) {
-        try (FileWriter writer = new FileWriter("uzytkownik_" + documentNumber + ".txt")) {
-            writer.write("Użytkownik numer: " + documentNumber + "\n");
-            writer.write(getBuyerInformation(order));
+    public void writeUserToFile(Order order) {
+        synchronized (OrderProcessor.class){
+            try (FileWriter writer = new FileWriter("uzytkownik_" + documentNumber + ".txt")) {
+                writer.write("Użytkownik numer: " + documentNumber + "\n");
+                writer.write(getBuyerInformation(order));
 
-        } catch (IOException e) {
-            System.out.println("Błąd generowania pliku z użytkownikiem");
+            } catch (IOException e) {
+                System.out.println("Błąd generowania pliku z użytkownikiem");
+            }
         }
     }
 
@@ -90,7 +96,7 @@ public class OrderProcessor {
         int ordinalNumber = 0;
         try {
             for (Product product : cart.getAddedProducts()) {
-                result += ++ordinalNumber + " " + product.getName() + " " + product.getBasePrice() + "\n";
+                result += ++ordinalNumber + DisplayFormatter.getProductToInvoice(product) + "\n";
             }
         } catch (EmptyCartException e) {
             e.getMessage();
