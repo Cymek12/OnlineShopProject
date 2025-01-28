@@ -212,10 +212,10 @@ public class CommandLine {
      */
     private void processProductAccessories(Product product, List<ProductConfiguration> chosenConfiguration) throws ConfigurationDoesNotExistException {
         System.out.println("Czy chcesz dodać akcesoria?");
-        System.out.println("1. Tak");
-        System.out.println("2. Nie");
+        System.out.println("1 - Tak");
+        System.out.println("Inna liczba - Nie");
         int addAccessoryOption = scanner.nextInt();
-        if(addAccessoryOption == 2){
+        if(addAccessoryOption != 1){
             return;
         }
         while (true){
@@ -225,10 +225,10 @@ public class CommandLine {
             chosenConfiguration.add(accessoryType);
 
             System.out.println("Czy chcesz dodać kolejne akcesorium?");
-            System.out.println("1. Tak");
-            System.out.println("2. Nie");
+            System.out.println("1 - Tak");
+            System.out.println("Inna liczba - Nie");
             int exitOption = scanner.nextInt();
-            if(exitOption == 2){
+            if(exitOption != 1){
                 break;
             }
         }
