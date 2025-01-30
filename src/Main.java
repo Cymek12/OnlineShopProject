@@ -1,5 +1,13 @@
+import service.CommandLine;
+import service.ProductManager;
+
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
+        ProductManager productManager = new ProductManager();
+        productManager.insertExampleData();
+
+        new CommandLine(productManager).run();
+
     }
 }
