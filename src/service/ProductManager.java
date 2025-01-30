@@ -23,16 +23,6 @@ public class ProductManager {
         }
     }
 
-    public void updateProduct(Product updatedProduct){
-        if(updatedProduct != null){
-            for (Product product : products) {
-                if(product.getId() == updatedProduct.getId()){
-                    product = updatedProduct;
-                }
-            }
-        }
-    }
-
     public boolean deleteProduct(Product product){
         if(product != null){
             products.remove(product);
