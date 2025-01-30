@@ -163,17 +163,7 @@ public class CommandLine {
         List<ProductConfiguration> chosenConfiguration = new ArrayList<>();
 
         System.out.println("Skonfiguruj " + product.getType());
-
-        Map<ConfigurationType, List<ProductConfiguration>> groupedConfigurations = new HashMap<>();
-        for (ProductConfiguration availableConfiguration : product.getAvailableConfigurations()) {
-            ConfigurationType type = availableConfiguration.getType();
-            if(!groupedConfigurations.containsKey(type)){
-                groupedConfigurations.put(type, new ArrayList<>());
-            }
-            groupedConfigurations.get(type).add(availableConfiguration);
-        }
-
-        for (ConfigurationType configurationType : groupedConfigurations.keySet()) {
+        for (ConfigurationType configurationType : product.getGroupedConfiguration().keySet()) {
             if(configurationType.equals(ConfigurationType.ACCESSORY)){
                 processProductAccessories(product, chosenConfiguration);
             }

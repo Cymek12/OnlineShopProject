@@ -1,6 +1,8 @@
 package model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -67,6 +69,14 @@ public class Product {
 
     public void setAvailableConfigurations(List<ProductConfiguration> availableConfigurations) {
         this.availableConfigurations = availableConfigurations;
+    }
+
+    public Map<ConfigurationType, List<ProductConfiguration>> getGroupedConfiguration(){
+        Map<ConfigurationType, List<ProductConfiguration>> groupedConfiguration = new HashMap<>();
+        for (ProductConfiguration availableConfiguration : availableConfigurations) {
+            groupedConfiguration.put(availableConfiguration.getType(), availableConfigurations);
+        }
+        return groupedConfiguration;
     }
 
     @Override
