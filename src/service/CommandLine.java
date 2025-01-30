@@ -80,19 +80,13 @@ public class CommandLine {
         }
         Product product = productOpt.get();
 
-        switch (product.getType()){
-            case ProductType.COMPUTER -> {
-                CartItem cartItem = configureComputerSpecifications(product);
-                cart.addProductToCart(cartItem);
-            }
-            case ProductType.SMARTPHONE -> {
-                CartItem cartItem = configureSmartphoneSpecifications(product);
-                cart.addProductToCart(cartItem);
-            }
-            default -> {
-                CartItem cartItem = new CartItem(product, new ArrayList<>());
-                cart.addProductToCart(cartItem);
-            }
+        if(product.getType().equals(ProductType.ELECTRONICS)){
+            CartItem cartItem = new CartItem(product, new ArrayList<>());
+            cart.addProductToCart(cartItem);
+        }
+        else {
+            CartItem cartItem = configureProductSpecifications(product);
+            cart.addProductToCart(cartItem);
         }
     }
 
@@ -163,50 +157,36 @@ public class CommandLine {
     }
 
     /**
-     * pozwala uzytkownikowi wybrac konfiguracje komputera
+     * pozwala uzytkownikowi wybrac konfiguracje produktu
      */
-    private CartItem configureComputerSpecifications(Product product) throws ConfigurationDoesNotExistException {
-        System.out.println("Konfiguracja komputera:");
-        System.out.println("Wybierz processor:");
-        printAvailableConfiguration(product, ConfigurationType.PROCESSOR);
-        ProductConfiguration processorType = getConfigurationType(product, scanner.nextLine());
-        System.out.println("Wybierz ilość pamięci RAM:");
-        printAvailableConfiguration(product, ConfigurationType.RAM_SIZE);
-        ProductConfiguration ramSizeType = getConfigurationType(product,scanner.nextLine());
-        System.out.println("Wybierz kartę graficzną:");
-        printAvailableConfiguration(product, ConfigurationType.GRAPHICS_CARD);
-        ProductConfiguration graphicsCardType = getConfigurationType(product, scanner.nextLine());
-        System.out.println("Wybierz pojemność dysku twardego:");
-        printAvailableConfiguration(product, ConfigurationType.STORAGE_SIZE);
-        ProductConfiguration storageSizeType = getConfigurationType(product, scanner.nextLine());
-
-        List<ProductConfiguration> chosenConfiguration = List.of(
-                processorType, ramSizeType, graphicsCardType, storageSizeType
-        );
-
-        return new CartItem(product, chosenConfiguration);
-    }
-
-    /**
-     * pozwala uzytkownikowi wybrac konfiguracje telefonu
-     */
-    private CartItem configureSmartphoneSpecifications(Product product) throws ConfigurationDoesNotExistException {
-        System.out.println("Konfiguracja telefonu:");
-        System.out.println("Wybierz kolor:");
-        printAvailableConfiguration(product, ConfigurationType.COLOR);
-        ProductConfiguration colorType = getConfigurationType(product, scanner.nextLine());
-        System.out.println("Wybierz pojemność baterii:");
-        printAvailableConfiguration(product, ConfigurationType.BATTERY_CAPACITY);
-        ProductConfiguration batteryCapacityType = getConfigurationType(product,scanner.nextLine());
-
+    private CartItem configureProductSpecifications(Product product) throws ConfigurationDoesNotExistException {
         List<ProductConfiguration> chosenConfiguration = new ArrayList<>();
-        chosenConfiguration.add(colorType);
-        chosenConfiguration.add(batteryCapacityType);
 
-        processProductAccessories(product, chosenConfiguration);
+        System.out.println("Skonfiguruj " + product.getType());
 
+        Map<ConfigurationType, List<ProductConfiguration>> groupedConfigurations = new HashMap<>();
+        for (ProductConfiguration availableConfiguration : product.getAvailableConfigurations()) {
+            ConfigurationType type = availableConfiguration.getType();
+            if(!groupedConfigurations.containsKey(type)){
+                groupedConfigurations.put(type, new ArrayList<>());
+            }
+            groupedConfigurations.get(type).add(availableConfiguration);
+        }
+
+        for (ConfigurationType configurationType : groupedConfigurations.keySet()) {
+            if(configurationType.equals(ConfigurationType.ACCESSORY)){
+                processProductAccessories(product, chosenConfiguration);
+            }
+            else{
+                System.out.println("Wybierz " + configurationType);
+                printAvailableConfiguration(product, configurationType);
+                ProductConfiguration chosenConfigurationType = getConfigurationType(product, scanner.nextLine());
+                chosenConfiguration.add(chosenConfigurationType);
+            }
+        }
         return new CartItem(product, chosenConfiguration);
     }
+
     /**
      * pozwala uzytkownikowi wybrac akcesoria do telefonu
      */
@@ -215,6 +195,7 @@ public class CommandLine {
         System.out.println("1 - Tak");
         System.out.println("Inna liczba - Nie");
         int addAccessoryOption = scanner.nextInt();
+        scanner.nextLine();
         if(addAccessoryOption != 1){
             return;
         }
@@ -228,6 +209,7 @@ public class CommandLine {
             System.out.println("1 - Tak");
             System.out.println("Inna liczba - Nie");
             int exitOption = scanner.nextInt();
+            scanner.nextLine();
             if(exitOption != 1){
                 break;
             }

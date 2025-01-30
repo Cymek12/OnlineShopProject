@@ -47,24 +47,24 @@ public class ProductManager {
                 new ProductConfiguration(ConfigurationType.PROCESSOR, "Intel i5", 0),
                 new ProductConfiguration(ConfigurationType.PROCESSOR, "Intel i7", 800),
                 new ProductConfiguration(ConfigurationType.PROCESSOR, "Intel i9", 1200),
-                new ProductConfiguration(ConfigurationType.RAM_SIZE, "8", 0),
-                new ProductConfiguration(ConfigurationType.RAM_SIZE, "16", 500),
-                new ProductConfiguration(ConfigurationType.RAM_SIZE, "32", 1000),
+                new ProductConfiguration(ConfigurationType.RAM_SIZE, "8 GB", 0),
+                new ProductConfiguration(ConfigurationType.RAM_SIZE, "16 GB", 500),
+                new ProductConfiguration(ConfigurationType.RAM_SIZE, "32 GB", 1000),
                 new ProductConfiguration(ConfigurationType.GRAPHICS_CARD, "NVIDIA GTX 1080", 0),
                 new ProductConfiguration(ConfigurationType.GRAPHICS_CARD, "NVIDIA RTX 3060", 1200),
                 new ProductConfiguration(ConfigurationType.GRAPHICS_CARD, "NVIDIA RTX 4070", 2700),
-                new ProductConfiguration(ConfigurationType.STORAGE_SIZE, "256", 0),
-                new ProductConfiguration(ConfigurationType.STORAGE_SIZE, "512", 300),
-                new ProductConfiguration(ConfigurationType.STORAGE_SIZE, "1000", 500)
+                new ProductConfiguration(ConfigurationType.STORAGE_SIZE, "256 GB", 0),
+                new ProductConfiguration(ConfigurationType.STORAGE_SIZE, "512 GB", 300),
+                new ProductConfiguration(ConfigurationType.STORAGE_SIZE, "1 TB ", 500)
         );
 
         List<ProductConfiguration> smartphoneConfigurations = List.of(
                 new ProductConfiguration(ConfigurationType.COLOR, "Czarny", 0),
                 new ProductConfiguration(ConfigurationType.COLOR, "Niebieski", 150),
                 new ProductConfiguration(ConfigurationType.COLOR, "Zielony", 150),
-                new ProductConfiguration(ConfigurationType.BATTERY_CAPACITY, "2200", 0),
-                new ProductConfiguration(ConfigurationType.BATTERY_CAPACITY, "3200", 400),
-                new ProductConfiguration(ConfigurationType.BATTERY_CAPACITY, "4200", 800),
+                new ProductConfiguration(ConfigurationType.BATTERY_CAPACITY, "2200 mAh", 0),
+                new ProductConfiguration(ConfigurationType.BATTERY_CAPACITY, "3200 mAh", 400),
+                new ProductConfiguration(ConfigurationType.BATTERY_CAPACITY, "4200 mAh", 800),
                 new ProductConfiguration(ConfigurationType.ACCESSORY, "Słuchawki", 150),
                 new ProductConfiguration(ConfigurationType.ACCESSORY, "Szybka ładowarka", 50),
                 new ProductConfiguration(ConfigurationType.ACCESSORY, "Etui", 30),
