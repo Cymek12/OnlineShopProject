@@ -1,13 +1,14 @@
 package model;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class ProductConfiguration{
     private ConfigurationType configurationType;
     private String value;
-    private double additionalPrice;
+    private BigDecimal additionalPrice;
 
-    public ProductConfiguration(ConfigurationType configurationType, String value, double additionalPrice) {
+    public ProductConfiguration(ConfigurationType configurationType, String value, BigDecimal additionalPrice) {
         this.configurationType = configurationType;
         this.value = value;
         this.additionalPrice = additionalPrice;
@@ -29,18 +30,18 @@ public class ProductConfiguration{
         this.value = value;
     }
 
-    public double getAdditionalPrice() {
+    public BigDecimal getAdditionalPrice() {
         return additionalPrice;
     }
 
-    public void setAdditionalPrice(double additionalPrice) {
+    public void setAdditionalPrice(BigDecimal additionalPrice) {
         this.additionalPrice = additionalPrice;
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ProductConfiguration that)) return false;
-        return Double.compare(additionalPrice, that.additionalPrice) == 0 && configurationType == that.configurationType && Objects.equals(value, that.value);
+        return configurationType == that.configurationType && Objects.equals(value, that.value) && Objects.equals(additionalPrice, that.additionalPrice);
     }
 
     @Override

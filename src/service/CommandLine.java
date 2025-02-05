@@ -5,6 +5,8 @@ import exception.EmptyCartException;
 import exception.NotAvailableInStorageException;
 import model.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -98,8 +100,7 @@ public class CommandLine {
         while (isRunning){
             System.out.println("Koszyk:");
             cart.printAddedProducts();
-            System.out.println("\nDo zapłaty: " + (Math.round(cart.getOrderPrice() * 100.0) / 100.0) + "zł");
-
+            System.out.println("\nDo zapłaty: " + (cart.getOrderPrice().setScale(2, RoundingMode.HALF_UP)) + "zł");
             System.out.println("1. Finalizuj zamówienie");
             System.out.println("2. Usuń wszystkie produkty z koszyka");
             System.out.println("3. Usuń produkt z koszyka");
@@ -138,18 +139,26 @@ public class CommandLine {
         System.out.print("Nazwisko: ");
         String lastName = scanner.nextLine();
         System.out.print("Numer telefonu: ");
-        int phoneNumber = scanner.nextInt();
-        scanner.nextLine();
+        String phoneNumber = scanner.nextLine();
         System.out.print("Adres email: ");
         String emailAddress = scanner.nextLine();
         System.out.print("Adres do wysyłki: ");
-        String deliveryAddress = scanner.nextLine();
+        System.out.println("Województwo:");
+        String province = scanner.nextLine();
+        System.out.println("Miasto:");
+        String city = scanner.nextLine();
+        System.out.println("Kod pocztowy:");
+        String zipCode = scanner.nextLine();
+        System.out.println("Ulica:");
+        String street = scanner.nextLine();
         System.out.println("Kod zniżkowy: (jeżeli nie posiadasz kodu zniżkowego, to zostaw pole puste)");
         String discountCode = scanner.nextLine();
         DiscountManager discountManager = new DiscountManager();
         double discount = discountManager.applyDiscount(discountCode);
+        BigDecimal discountDecimal = new BigDecimal(discount);
 
-        Order order = new Order(firstName, lastName, phoneNumber, emailAddress, deliveryAddress, cart.getOrderPrice() * discount);
+        Address address = new Address(province, city, zipCode, street);
+        Order order = new Order(firstName, lastName, phoneNumber, emailAddress, address, cart.getOrderPrice().multiply(discountDecimal));
         orderProcessor.generateInvoice(order, cart);
         orderProcessor.writeOrderToFile(cart);
         orderProcessor.writeUserToFile(order);
@@ -216,7 +225,9 @@ public class CommandLine {
     }
 
     private void printAvailableConfiguration(Product product, ConfigurationType configurationType){
-        product.getAvailableConfigurations().stream().filter(s -> s.getType().equals(configurationType)).forEach(System.out::println);
+        product.getAvailableConfigurations().stream()
+                .filter(productConfig -> productConfig.getType().equals(configurationType))
+                .forEach(System.out::println);
     }
 
     private void deleteProductFromCart() throws EmptyCartException {

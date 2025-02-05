@@ -1,6 +1,8 @@
 package model;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
@@ -9,12 +11,12 @@ import java.util.Objects;
 public class Order {
     private String firstName;
     private String lastName;
-    private int phoneNumber;
+    private String phoneNumber;
     private String emailAddress;
-    private String deliveryAddress;
-    private double orderPrice;
+    private Address deliveryAddress;
+    private BigDecimal orderPrice;
 
-    public Order(String firstName, String lastName, int phoneNumber, String emailAddress, String deliveryAddress, double orderPrice) {
+    public Order(String firstName, String lastName, String phoneNumber, String emailAddress, Address deliveryAddress, BigDecimal orderPrice) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -39,11 +41,11 @@ public class Order {
         this.lastName = lastName;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -55,30 +57,30 @@ public class Order {
         this.emailAddress = emailAddress;
     }
 
-    public String getDeliveryAddress() {
+    public Address getDeliveryAddress() {
         return deliveryAddress;
     }
 
-    public void setDeliveryAddress(String deliveryAddress) {
+    public void setDeliveryAddress(Address deliveryAddress) {
         this.deliveryAddress = deliveryAddress;
     }
 
-    public double getOrderPrice() {
+    public BigDecimal getOrderPrice() {
         return orderPrice;
     }
 
-    public void setOrderPrice(double orderPrice) {
+    public void setOrderPrice(BigDecimal orderPrice) {
         this.orderPrice = orderPrice;
     }
 
-    public double getRoundedOrderPrice() {
-        return Math.round(orderPrice * 100.0) / 100.0;
+    public BigDecimal getRoundedOrderPrice() {
+        return orderPrice.setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Order order)) return false;
-        return phoneNumber == order.phoneNumber && Double.compare(orderPrice, order.orderPrice) == 0 && Objects.equals(firstName, order.firstName) && Objects.equals(lastName, order.lastName) && Objects.equals(emailAddress, order.emailAddress) && Objects.equals(deliveryAddress, order.deliveryAddress);
+        return Objects.equals(firstName, order.firstName) && Objects.equals(lastName, order.lastName) && Objects.equals(phoneNumber, order.phoneNumber) && Objects.equals(emailAddress, order.emailAddress) && Objects.equals(deliveryAddress, order.deliveryAddress) && Objects.equals(orderPrice, order.orderPrice);
     }
 
     @Override
